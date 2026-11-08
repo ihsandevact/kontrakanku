@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<LandlordProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Helper to fetch landlord profile from Supabase with auto-recovery from user_metadata
+  // Helper to fetch landlord profile from Supabase with multi-tier auto-recovery
   const fetchProfile = async (userId: string, userObj?: User | null): Promise<LandlordProfile | null> => {
     if (!supabase) return null;
     try {
@@ -78,14 +78,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return data as LandlordProfile;
       }
 
-      // Auto-recovery: If profile row is missing in 'profiles' table (e.g. email confirmation flow),
-      // recover it seamlessly from user.user_metadata (saved during registration)
-      if (userObj?.user_metadata) {
-        const meta = userObj.user_metadata;
-        const businessName = meta.business_name || 'Kontrakan Mandiri';
-        const ownerName = meta.owner_name || '';
-        const phone = meta.phone || '';
-        const slug = meta.slug || formatSlug(businessName) || 'kontrakan';
+      // Auto-recovery: If profile row is missing in 'profiles' table (e.g. RLS policy or table missing),
+      // seamlessly reconstruct from user.user_metadata, app_settings, and local cached profile
+      const cached = getCachedProfile();
+      let settingsCloud: any = null;
+      try {
+        const { data: sData } = await supabase.from('app_settings').select('*').eq('id', userId).maybeSingle();
+        if (sData) settingsCloud = sData;
+        else {
+          const { data: dData } = await supabase.from('app_settings').select('*').eq('id', 'default').maybeSingle();
+          if (dData) settingsCloud = dData;
+        }
+      } catch {}
+
+      if (userObj?.user_metadata || cached || settingsCloud) {
+        const meta = userObj?.user_metadata || {};
+        const businessName = meta.business_name || cached?.business_name || 'Kontrakan Mandiri';
+        const ownerName = meta.owner_name || cached?.owner_name || settingsCloud?.account_holder || '';
+        const phone = meta.phone || cached?.phone || settingsCloud?.contact_phone || '';
+        const slug = meta.slug || cached?.slug || formatSlug(businessName) || 'kontrakan';
+        const bankName = meta.bank_name || settingsCloud?.bank_name || cached?.bank_name || 'BCA';
+        const accountNumber = meta.account_number || settingsCloud?.account_number || cached?.account_number || '';
+        const accountHolder = meta.account_holder || settingsCloud?.account_holder || cached?.account_holder || ownerName;
+        const reminderDays = meta.reminder_days_before ?? settingsCloud?.reminder_days_before ?? cached?.reminder_days_before ?? 7;
+        const defaultCycle = meta.default_cycle || settingsCloud?.default_cycle || cached?.default_cycle || 'semi_annual';
+        const customWaTemplate = meta.custom_wa_template ?? settingsCloud?.custom_wa_template ?? cached?.custom_wa_template ?? null;
 
         const recoveredProfile: LandlordProfile = {
           id: userId,
@@ -93,21 +110,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           business_name: businessName,
           owner_name: ownerName,
           phone,
-          bank_name: 'BCA',
-          account_number: '',
-          account_holder: ownerName,
-          reminder_days_before: 7,
-          default_cycle: 'semi_annual',
-          created_at: new Date().toISOString(),
+          bank_name: bankName,
+          account_number: accountNumber,
+          account_holder: accountHolder,
+          reminder_days_before: Number(reminderDays),
+          default_cycle: defaultCycle,
+          custom_wa_template: customWaTemplate,
+          created_at: cached?.created_at || new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
 
-        // Persist recovered profile into profiles table since user is now authenticated
+        // Attempt non-fatal persistence into profiles table
         try {
           await supabase.from('profiles').upsert(recoveredProfile);
-        } catch (uErr) {
-          console.error('Failed to upsert recovered profile into profiles table:', uErr);
-        }
+        } catch {}
 
         return recoveredProfile;
       }
@@ -115,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return null;
     } catch (err) {
       console.error('Failed to fetch profile:', err);
-      return null;
+      return getCachedProfile();
     }
   };
 
@@ -404,19 +420,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     if (isSupabaseConfigured() && supabase) {
+      // 1. Triple-layer cloud persistence: Sync directly to Supabase Auth user_metadata
       try {
-        const { error } = await supabase
-          .from('profiles')
-          .update(updatedProfile)
-          .eq('id', profile.id);
+        await supabase.auth.updateUser({
+          data: {
+            business_name: updatedProfile.business_name,
+            owner_name: updatedProfile.owner_name,
+            phone: updatedProfile.phone,
+            slug: updatedProfile.slug,
+            bank_name: updatedProfile.bank_name,
+            account_number: updatedProfile.account_number,
+            account_holder: updatedProfile.account_holder,
+            reminder_days_before: updatedProfile.reminder_days_before,
+            default_cycle: updatedProfile.default_cycle,
+            custom_wa_template: updatedProfile.custom_wa_template,
+          },
+        });
+      } catch (authErr) {
+        console.warn('Non-fatal: could not update Supabase user_metadata:', authErr);
+      }
 
-        if (error) {
-          return { success: false, error: error.message };
-        }
-      } catch (err: any) {
-        return { success: false, error: err?.message || 'Gagal memperbarui profil.' };
+      // 2. Persist to app_settings table in Supabase
+      try {
+        const settingsPayload = {
+          id: profile.id,
+          bank_name: updatedProfile.bank_name || 'BCA',
+          account_number: updatedProfile.account_number || '',
+          account_holder: updatedProfile.account_holder || updatedProfile.owner_name || '',
+          contact_phone: updatedProfile.phone || '',
+          reminder_days_before: updatedProfile.reminder_days_before || 7,
+          default_cycle: updatedProfile.default_cycle || 'semi_annual',
+          custom_wa_template: updatedProfile.custom_wa_template || null,
+          updated_at: updatedProfile.updated_at,
+        };
+        await supabase.from('app_settings').upsert(settingsPayload);
+        await supabase.from('app_settings').upsert({ ...settingsPayload, id: 'default' });
+      } catch (setErr) {
+        console.warn('Non-fatal: could not update app_settings:', setErr);
+      }
+
+      // 3. Try updating profiles table
+      try {
+        await supabase
+          .from('profiles')
+          .upsert(updatedProfile);
+      } catch (profErr) {
+        console.warn('Non-fatal: could not upsert profiles table:', profErr);
       }
     }
+
+    // 4. Update local registered users store if available
+    try {
+      const registeredUsers = getLocalRegisteredUsers();
+      const updatedUsers = registeredUsers.map((u: any) =>
+        u.profile?.id === profile.id ? { ...u, profile: updatedProfile } : u
+      );
+      localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(updatedUsers));
+    } catch {}
 
     setProfile(updatedProfile);
     setAuthSession(true, profile.id, user?.email, updatedProfile);

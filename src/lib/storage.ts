@@ -179,12 +179,23 @@ export async function saveSettings(settings: AppSettings): Promise<AppSettings> 
       localStorage.setItem(PROFILE_SESSION_KEY, JSON.stringify(updatedProfile));
     }
     if (isSupabaseConfigured() && supabase) {
-      await supabase.from('profiles').update(updatedProfile).eq('id', profile.id);
+      try {
+        await supabase.from('profiles').upsert(updatedProfile);
+      } catch (profErr) {
+        console.warn('Non-fatal: could not update profiles in saveSettings:', profErr);
+      }
     }
   }
 
   if (isSupabaseConfigured() && supabase) {
-    await supabase.from('app_settings').upsert(updated);
+    try {
+      await supabase.from('app_settings').upsert(updated);
+      // Also mirror to default record for anonymous public lookup resilience
+      await supabase.from('app_settings').upsert({ ...updated, id: 'default' });
+    } catch (setErr) {
+      console.warn('Non-fatal: could not upsert app_settings:', setErr);
+    }
+    saveToStorage(STORAGE_KEYS.SETTINGS, updated);
     return updated;
   }
   saveToStorage(STORAGE_KEYS.SETTINGS, updated);
@@ -1010,7 +1021,9 @@ export async function getLandlordProfileBySlug(slug: string): Promise<LandlordPr
   // 2. Try browser localStorage if available (same tab)
   if (typeof window !== 'undefined') {
     const cached = getCachedProfile();
-    if (cached && cached.slug === cleanSlug) return cached;
+    if (cached && (cached.slug === cleanSlug || (cached.business_name && cleanSlug.includes(cached.slug)))) {
+      return cached;
+    }
 
     const rawUsers =
       localStorage.getItem('kontrakinaja_registered_users_v1') ||
@@ -1019,7 +1032,9 @@ export async function getLandlordProfileBySlug(slug: string): Promise<LandlordPr
     if (rawUsers) {
       try {
         const users: any[] = JSON.parse(rawUsers);
-        const match = users.find((u) => u.profile?.slug === cleanSlug);
+        const match = users.find(
+          (u) => u.profile?.slug === cleanSlug || (u.profile?.business_name && cleanSlug.includes(u.profile?.slug))
+        );
         if (match) return match.profile as LandlordProfile;
       } catch {}
     }
@@ -1063,7 +1078,35 @@ export async function getLandlordProfileBySlug(slug: string): Promise<LandlordPr
     } catch {}
   }
 
-  // 4. Default demo slug fallback
+  // 4. Fallback from local storage properties if running offline / without cloud connection
+  if (typeof window !== 'undefined') {
+    const localProps = loadFromStorage<Property[]>(STORAGE_KEYS.PROPERTIES, []);
+    if (localProps.length > 0) {
+      const settings = await getSettings();
+      const detectedOwnerId = localProps[0]?.owner_id || 'landlord-primary';
+      const words = cleanSlug.split('-').filter(Boolean);
+      const businessName = words.length > 0
+        ? words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+        : 'Kontrakan Mandiri';
+
+      return {
+        id: detectedOwnerId,
+        slug: cleanSlug,
+        business_name: businessName,
+        owner_name: settings?.account_holder || 'Pemilik Kontrakan',
+        phone: settings?.contact_phone || '',
+        bank_name: settings?.bank_name || 'BCA',
+        account_number: settings?.account_number || '',
+        account_holder: settings?.account_holder || '',
+        reminder_days_before: settings?.reminder_days_before || 7,
+        default_cycle: settings?.default_cycle || 'semi_annual',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+    }
+  }
+
+  // 5. Default demo slug fallback
   if (cleanSlug === 'kontrakan-berkah' || cleanSlug === 'demo') {
     return {
       id: 'demo-landlord-01',

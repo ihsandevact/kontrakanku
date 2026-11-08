@@ -130,35 +130,58 @@ export default function SettingsPage() {
     setIsSubmitting(true);
     try {
       const cleanSlug = formatSlug(slug || businessName || 'kontrakan');
+      const trimmedBusiness = businessName.trim();
+      const trimmedOwner = ownerName.trim();
+      const trimmedPhone = contactPhone.trim();
+      const trimmedBank = bankName.trim();
+      const trimmedAccount = accountNumber.trim();
+      const trimmedHolder = accountHolder.trim();
+      const numReminderDays = Number(reminderDays) || 7;
+      const trimmedCustomWa = customTemplate.trim() || null;
 
       if (profile) {
-        await updateProfile({
-          business_name: businessName.trim(),
-          owner_name: ownerName.trim(),
+        const res = await updateProfile({
+          business_name: trimmedBusiness,
+          owner_name: trimmedOwner,
           slug: cleanSlug,
-          phone: contactPhone.trim(),
-          bank_name: bankName.trim(),
-          account_number: accountNumber.trim(),
-          account_holder: accountHolder.trim(),
-          reminder_days_before: Number(reminderDays),
+          phone: trimmedPhone,
+          bank_name: trimmedBank,
+          account_number: trimmedAccount,
+          account_holder: trimmedHolder,
+          reminder_days_before: numReminderDays,
           default_cycle: defaultCycle,
-          custom_wa_template: customTemplate.trim() || null,
+          custom_wa_template: trimmedCustomWa,
         });
+
+        if (!res.success && res.error) {
+          console.warn('Profile update notice:', res.error);
+        }
       }
 
       if (settings) {
         const updated = await saveSettings({
           ...settings,
-          bank_name: bankName.trim(),
-          account_number: accountNumber.trim(),
-          account_holder: accountHolder.trim(),
-          contact_phone: contactPhone.trim(),
-          reminder_days_before: Number(reminderDays),
+          bank_name: trimmedBank,
+          account_number: trimmedAccount,
+          account_holder: trimmedHolder,
+          contact_phone: trimmedPhone,
+          reminder_days_before: numReminderDays,
           default_cycle: defaultCycle,
-          custom_wa_template: customTemplate.trim() || null,
+          custom_wa_template: trimmedCustomWa,
         });
         setSettings(updated);
       }
+
+      // Keep local input fields synchronized with saved values
+      setBusinessName(trimmedBusiness);
+      setOwnerName(trimmedOwner);
+      setSlug(cleanSlug);
+      setContactPhone(trimmedPhone);
+      setBankName(trimmedBank);
+      setAccountNumber(trimmedAccount);
+      setAccountHolder(trimmedHolder);
+      setReminderDays(numReminderDays);
+      setCustomTemplate(trimmedCustomWa || '');
 
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2500);
