@@ -6,6 +6,7 @@ import { AppSettings, Lease, Property } from '@/types/database';
 import { getLeases, getProperties, getSettings } from '@/lib/storage';
 import { formatRupiah } from '@/lib/formatters';
 import { generateCatalogInquiryUrl } from '@/lib/application-whatsapp';
+import { PropertyDetailModal } from '@/components/public/PropertyDetailModal';
 import {
   ArrowRight,
   Building2,
@@ -33,6 +34,7 @@ export default function CatalogPage() {
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [filterAvailability, setFilterAvailability] = useState<'all' | 'available'>('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -165,8 +167,8 @@ export default function CatalogPage() {
             >
               <div>
                 {/* Visual Header with Real Photo or Fallback */}
-                <Link
-                  href={`/katalog/${prop.id}`}
+                <div
+                  onClick={() => setSelectedProperty(prop)}
                   className="block relative h-48 sm:h-52 w-full overflow-hidden bg-slate-900 group cursor-pointer"
                 >
                   {photoSrc ? (
@@ -230,7 +232,7 @@ export default function CatalogPage() {
                       )}
                     </div>
                   </div>
-                </Link>
+                </div>
 
                 {/* Body Details */}
                 <div className="p-5 space-y-4">
@@ -309,14 +311,15 @@ export default function CatalogPage() {
 
               {/* Action Buttons */}
               <div className="p-5 pt-0 space-y-2">
-                <Link
-                  href={`/katalog/${prop.id}`}
-                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-slate-800 dark:text-slate-200 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-bold border border-slate-200 dark:border-slate-700 transition group"
+                <button
+                  type="button"
+                  onClick={() => setSelectedProperty(prop)}
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-slate-800 dark:text-slate-200 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer group"
                 >
                   <Eye className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   <span>Lihat Foto & Detail Unit</span>
                   <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                </button>
 
                 <div className="flex flex-col sm:flex-row items-center gap-2">
                   {!isOccupied ? (
@@ -348,6 +351,18 @@ export default function CatalogPage() {
           );
         })}
       </div>
+
+      {/* Detail Modal */}
+      <PropertyDetailModal
+        isOpen={!!selectedProperty}
+        onClose={() => setSelectedProperty(null)}
+        property={selectedProperty}
+        isOccupied={selectedProperty ? occupiedPropertyIds.has(selectedProperty.id) : false}
+        ownerName={settings?.account_holder || 'Pemilik Kontrakan'}
+        ownerPhone={settings?.contact_phone || undefined}
+        businessName="Kontrakan Mandiri"
+        applyUrl={selectedProperty ? `/sewa?propertyId=${selectedProperty.id}` : undefined}
+      />
     </div>
   );
 }

@@ -61,7 +61,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center w-full py-4 sm:py-8 -mb-20 sm:-mb-16 md:-mb-6 my-auto">
+    <div className="flex-1 flex flex-col items-center justify-center w-full py-4 sm:py-8 my-auto">
       <div className="w-full max-w-sm sm:max-w-md my-auto p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xl space-y-6">
       {/* Brand Header */}
       <div className="text-center space-y-2">

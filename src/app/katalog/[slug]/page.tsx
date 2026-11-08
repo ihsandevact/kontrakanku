@@ -7,6 +7,7 @@ import { LandlordProfile, Lease, Property } from '@/types/database';
 import { getLeases, getPublicPropertiesBySlug } from '@/lib/storage';
 import { formatRupiah } from '@/lib/formatters';
 import { formatPhoneNumber } from '@/lib/whatsapp';
+import { PropertyDetailModal } from '@/components/public/PropertyDetailModal';
 import {
   ArrowRight,
   Building2,
@@ -16,6 +17,7 @@ import {
   CheckCircle2,
   Clock,
   ExternalLink,
+  Eye,
   Flame,
   Home,
   Info,
@@ -37,6 +39,7 @@ export default function LandlordCatalogPage() {
   const [filterAvailability, setFilterAvailability] = useState<'all' | 'available'>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -222,15 +225,24 @@ export default function LandlordCatalogPage() {
           {displayedProperties.map((prop) => {
             const isOccupied = occupiedPropertyIds.has(prop.id);
             const coverPhoto = prop.photos?.[0] || prop.photo_url || null;
+            const totalPhotos = prop.photos?.length || (prop.photo_url ? 1 : 0);
+            const unitWaUrl = rawPhone
+              ? `https://wa.me/${formatPhoneNumber(rawPhone)}?text=${encodeURIComponent(
+                  `Halo ${landlord.owner_name}, saya melihat unit *${prop.name}* di katalog ${landlord.business_name}. Apakah masih bisa disewa?`
+                )}`
+              : null;
 
             return (
               <div
                 key={prop.id}
-                className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition"
+                className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition group"
               >
                 <div>
-                  {/* Image / Header */}
-                  <div className="relative aspect-video w-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  {/* Image / Header - Clickable to open detail */}
+                  <div
+                    onClick={() => setSelectedProperty(prop)}
+                    className="relative aspect-video w-full bg-slate-100 dark:bg-slate-800 overflow-hidden cursor-pointer"
+                  >
                     {coverPhoto ? (
                       <img
                         src={coverPhoto}
@@ -243,23 +255,43 @@ export default function LandlordCatalogPage() {
                         <span className="text-xs">Foto Belum Tersedia</span>
                       </div>
                     )}
-                    <div className="absolute top-3 right-3">
+
+                    {/* Status Badge */}
+                    <div className="absolute top-3 left-3">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold shadow-md ${
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-md backdrop-blur-md ${
                           isOccupied
-                            ? 'bg-slate-900/80 text-slate-300 backdrop-blur'
+                            ? 'bg-slate-900/80 text-slate-300'
                             : 'bg-emerald-600 text-white'
                         }`}
                       >
-                        {isOccupied ? 'Terisi' : 'Tersedia'}
+                        <span
+                          className={`w-2 h-2 rounded-full ${
+                            isOccupied ? 'bg-slate-400' : 'bg-emerald-300 animate-pulse'
+                          }`}
+                        />
+                        <span>{isOccupied ? 'Terisi' : 'Tersedia'}</span>
                       </span>
                     </div>
+
+                    {/* Photo count indicator */}
+                    {totalPhotos > 1 && (
+                      <div className="absolute top-3 right-3">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-black/60 text-white backdrop-blur-md border border-white/15">
+                          <Camera className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>{totalPhotos} Foto</span>
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Body Info */}
                   <div className="p-5 space-y-3">
                     <div>
-                      <h3 className="font-bold text-slate-900 dark:text-white text-lg">
+                      <h3
+                        onClick={() => setSelectedProperty(prop)}
+                        className="font-bold text-slate-900 dark:text-white text-lg hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition"
+                      >
                         {prop.name}
                       </h3>
                       {prop.address && (
@@ -307,21 +339,63 @@ export default function LandlordCatalogPage() {
                   </div>
                 </div>
 
-                {/* Footer Action */}
-                <div className="p-5 pt-0">
-                  <Link
-                    href={`/sewa/${slug}?property=${prop.id}`}
-                    className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition shadow-xs"
+                {/* Footer Action Buttons */}
+                <div className="p-5 pt-0 space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedProperty(prop)}
+                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-slate-800 dark:text-slate-200 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer"
                   >
-                    <span>Ajukan Sewa Unit Ini</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                    <Eye className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <span>Lihat Foto & Detail Unit</span>
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    {!isOccupied ? (
+                      <Link
+                        href={`/sewa/${slug}?property=${prop.id}`}
+                        className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition shadow-xs"
+                      >
+                        <span>Ajukan Sewa</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    ) : (
+                      <div className="flex-1 py-2.5 text-center text-xs text-slate-400 font-medium italic bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                        Sedang Terisi
+                      </div>
+                    )}
+
+                    {unitWaUrl && (
+                      <a
+                        href={unitWaUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition flex items-center justify-center shrink-0 cursor-pointer"
+                        title="Tanya Pemilik via WhatsApp"
+                        aria-label="Tanya Pemilik via WhatsApp"
+                      >
+                        <MessageSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
       )}
+
+      {/* Property Detail Modal */}
+      <PropertyDetailModal
+        isOpen={!!selectedProperty}
+        onClose={() => setSelectedProperty(null)}
+        property={selectedProperty}
+        isOccupied={selectedProperty ? occupiedPropertyIds.has(selectedProperty.id) : false}
+        ownerName={landlord.owner_name}
+        ownerPhone={landlord.phone}
+        businessName={landlord.business_name}
+        applyUrl={selectedProperty ? `/sewa/${slug}?property=${selectedProperty.id}` : undefined}
+      />
     </div>
   );
 }

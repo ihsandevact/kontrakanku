@@ -71,7 +71,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   if (isPublic && pathname !== '/') {
     return (
       <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-x-hidden">
-        <main className="flex-1 flex flex-col px-4 sm:px-6">{children}</main>
+        <PublicHeader />
+        <main className="flex-1 flex flex-col px-4 sm:px-6 py-6 sm:py-8 max-w-5xl w-full mx-auto">{children}</main>
       </div>
     );
   }

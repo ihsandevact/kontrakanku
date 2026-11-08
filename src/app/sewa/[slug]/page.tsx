@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { BillingCycle, LandlordProfile, Property } from '@/types/database';
 import { getPublicPropertiesBySlug, submitPublicTenantApplication } from '@/lib/storage';
 import { formatPhoneNumber } from '@/lib/whatsapp';
+import { formatRupiah } from '@/lib/formatters';
 import { CustomSelect } from '@/components/ui/CustomSelect';
 import {
   ArrowLeft,
@@ -235,7 +236,55 @@ function LandlordSewaContent() {
           )}
         </div>
       ) : (
-        <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm">
+        <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-6">
+          {/* Unit Selection Preview Card */}
+          {selectedPropertyObj && (
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-14 h-14 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700">
+                  {selectedPropertyObj.photos?.[0] || selectedPropertyObj.photo_url ? (
+                    <img
+                      src={selectedPropertyObj.photos?.[0] || selectedPropertyObj.photo_url || ''}
+                      alt={selectedPropertyObj.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-400">
+                      <Building2 className="w-6 h-6" />
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                      {selectedPropertyObj.name}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      Unit Terpilih
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 truncate mt-0.5">
+                    {selectedPropertyObj.address || 'Katalog Resmi Unit'}
+                  </p>
+                </div>
+              </div>
+
+              {selectedPropertyObj.monthly_rate && (
+                <div className="text-left sm:text-right shrink-0">
+                  <div className="flex items-baseline sm:justify-end gap-1">
+                    <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
+                      {formatRupiah(selectedPropertyObj.monthly_rate)}
+                    </span>
+                    <span className="text-[11px] text-slate-400">/ bln</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">
+                    Min. Sewa: {minRentalMonths === 12 ? '1 Tahun' : `${minRentalMonths} Bulan`}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Unit Kontrakan */}
             <div>
@@ -371,17 +420,28 @@ function LandlordSewaContent() {
             />
           </div>
 
+          {/* Privacy & Trust Badge */}
+          <div className="p-3.5 rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200 flex items-center gap-2.5">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span>
+              Data Anda terlindungi & diteruskan langsung ke pemilik kontrakan ({landlord.owner_name}) tanpa perantara.
+            </span>
+          </div>
+
           <button
             type="submit"
             disabled={isSubmitting || properties.length === 0}
-            className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+            className="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2 disabled:opacity-50 active:scale-[0.99] cursor-pointer"
           >
             {isSubmitting ? (
-              <span>Mengirim Formulir...</span>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Mengirimkan Permohonan Sewa...</span>
+              </div>
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                <span>Kirim Permohonan Sewa</span>
+                <span>Kirim Permohonan Sewa Mandiri</span>
               </>
             )}
           </button>
