@@ -52,7 +52,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center space-y-3 bg-slate-50 dark:bg-slate-950">
         <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-        <span className="text-xs text-slate-400 font-medium">Memuat Kontrakin...</span>
+        <span className="text-xs text-slate-400 font-medium">Memuat KontrakinAja!...</span>
       </div>
     );
   }

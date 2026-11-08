@@ -42,7 +42,7 @@ function LoginForm() {
 
     try {
       // Support email or fallback to demo account if left blank
-      const loginEmail = email.trim() || 'demo@kontrakin.com';
+      const loginEmail = email.trim() || 'demo@kontrakinaja.com';
       const res = await login(loginEmail, password);
 
       if (res.success) {
@@ -74,10 +74,10 @@ function LoginForm() {
             <span>Akses Masuk Pemilik</span>
           </span>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1.5 tracking-tight">
-            kontrakin
+            Kontrakin<span className="text-emerald-600 dark:text-emerald-400">Aja!</span>
           </h1>
           <p className="text-xs text-slate-500 max-w-xs mx-auto mt-1">
-            Masuk untuk mengelola unit kontrakan, tagihan sewa WhatsApp, dan pencatatan kas laba bersih Anda di Kontrakin.
+            Masuk untuk mengelola unit kontrakan, tagihan sewa WhatsApp, dan pencatatan kas laba bersih Anda di KontrakinAja!.
           </p>
         </div>
       </div>

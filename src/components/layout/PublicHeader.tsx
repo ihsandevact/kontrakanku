@@ -17,7 +17,7 @@ export const PublicHeader: React.FC = () => {
             <Building2 className="w-5 h-5 text-white" />
           </div>
           <span className="tracking-tight text-slate-900 dark:text-white font-extrabold text-lg">
-            kontrak<span className="text-emerald-600 dark:text-emerald-400">in</span>
+            Kontrakin<span className="text-emerald-600 dark:text-emerald-400">Aja!</span>
           </span>
         </Link>
 

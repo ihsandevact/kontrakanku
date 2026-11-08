@@ -64,8 +64,8 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
 
   const faqs = [
     {
-      q: 'Apakah Kontrakin benar-benar 100% gratis digunakan?',
-      a: 'Ya, Kontrakin dapat digunakan secara gratis tanpa biaya langganan bulanan tersembunyi dan tanpa potongan komisi sewa sama sekali. Seluruh uang sewa 100% langsung ditransfer penyewa ke rekening bank pribadi Anda.',
+      q: 'Apakah KontrakinAja! benar-benar 100% gratis digunakan?',
+      a: 'Ya, KontrakinAja! dapat digunakan secara gratis tanpa biaya langganan bulanan tersembunyi dan tanpa potongan komisi sewa sama sekali. Seluruh uang sewa 100% langsung ditransfer penyewa ke rekening bank pribadi Anda.',
     },
     {
       q: 'Apakah penyewa saya juga wajib mendownload aplikasi atau membuat akun?',
@@ -155,7 +155,7 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-500/80 shrink-0" />
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500/80 shrink-0" />
               <span className="text-[11px] sm:text-xs text-slate-400 font-mono ml-1 sm:ml-2 truncate hidden xs:inline">
-                kontrakin-demo.app
+                kontrakinaja-demo.app
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-emerald-400 font-medium shrink-0">
@@ -321,7 +321,7 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
                     <div className="min-w-0 flex-1">
                       <div className="text-xs font-bold text-white truncate">Berkah Residence Mandiri</div>
                       <div className="text-[9px] sm:text-[10px] text-emerald-400 font-mono truncate max-w-[160px] xs:max-w-[220px] sm:max-w-none">
-                        kontrakin.com/katalog/berkah-residence
+                        kontrakinaja.com/katalog/berkah-residence
                       </div>
                     </div>
                   </div>
@@ -492,18 +492,18 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
       </section>
 
       {/* ==========================================
-          4. MASALAH NYATA VS SOLUSI KONTRAKIN
+          4. MASALAH NYATA VS SOLUSI KONTRAKINAJA!
           ========================================== */}
       <section id="solusi" className="space-y-6 sm:space-y-8">
         <div className="text-center space-y-1.5 sm:space-y-2 max-w-xl mx-auto px-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-semibold">
-            <span>Mengapa Juragan Memilih Kontrakin</span>
+            <span>Mengapa Juragan Memilih KontrakinAja!</span>
           </div>
           <h2 className="text-xl xs:text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
             Tinggalkan Cara Lama yang Menguras Waktu & Pikiran
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Hampir semua pemilik kontrakan menghadapi 4 masalah klasik ini sebelum menggunakan Kontrakin.
+            Hampir semua pemilik kontrakan menghadapi 4 masalah klasik ini sebelum menggunakan KontrakinAja!.
           </p>
         </div>
 
@@ -524,7 +524,7 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
             <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div className="text-xs text-emerald-800 dark:text-emerald-200 leading-relaxed">
-                <span className="font-bold">Solusi Kontrakin:</span> Indikator warna otomatis mendeteksi status H-3, Hari H, dan keterlambatan pembayaran secara real-time.
+                <span className="font-bold">Solusi KontrakinAja!:</span> Indikator warna otomatis mendeteksi status H-3, Hari H, dan keterlambatan pembayaran secara real-time.
               </div>
             </div>
           </div>
@@ -545,7 +545,7 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
             <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div className="text-xs text-emerald-800 dark:text-emerald-200 leading-relaxed">
-                <span className="font-bold">Solusi Kontrakin:</span> Draft tagihan WhatsApp santun & profesional siap kirim dalam 1 sentuhan, lengkap dengan rekening bank.
+                <span className="font-bold">Solusi KontrakinAja!:</span> Draft tagihan WhatsApp santun & profesional siap kirim dalam 1 sentuhan, lengkap dengan rekening bank.
               </div>
             </div>
           </div>
@@ -566,7 +566,7 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
             <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div className="text-xs text-emerald-800 dark:text-emerald-200 leading-relaxed">
-                <span className="font-bold">Solusi Kontrakin:</span> Buku kas otomatis memisahkan pemasukan sewa dan biaya perbaikan. Laba bersih tersaji transparan.
+                <span className="font-bold">Solusi KontrakinAja!:</span> Buku kas otomatis memisahkan pemasukan sewa dan biaya perbaikan. Laba bersih tersaji transparan.
               </div>
             </div>
           </div>
@@ -587,7 +587,7 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
             <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div className="text-xs text-emerald-800 dark:text-emerald-200 leading-relaxed">
-                <span className="font-bold">Solusi Kontrakin:</span> Surat Perjanjian Sewa Mandiri (SPSM) berpasal hukum standar diteken digital dari HP dan siap unduh PDF.
+                <span className="font-bold">Solusi KontrakinAja!:</span> Surat Perjanjian Sewa Mandiri (SPSM) berpasal hukum standar diteken digital dari HP dan siap unduh PDF.
               </div>
             </div>
           </div>
@@ -701,7 +701,7 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
               Tautan Katalog Online & Permohonan Mandiri
             </h3>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              Dapatkan tautan website khusus untuk usaha kontrakan Anda (<code className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-emerald-600 font-mono text-xs">kontrakin.com/katalog/nama-usaha</code>). Calon penyewa bisa melihat ketersediaan unit dan langsung mengajukan sewa mandiri.
+              Dapatkan tautan website khusus untuk usaha kontrakan Anda (<code className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-emerald-600 font-mono text-xs">kontrakinaja.com/katalog/nama-usaha</code>). Calon penyewa bisa melihat ketersediaan unit dan langsung mengajukan sewa mandiri.
             </p>
           </div>
 
@@ -733,7 +733,7 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
             Pertanyaan yang Sering Diajukan
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Segala hal yang perlu Anda ketahui sebelum menggunakan Kontrakin.
+            Segala hal yang perlu Anda ketahui sebelum menggunakan KontrakinAja!.
           </p>
         </div>
 
@@ -823,7 +823,7 @@ Mohon konfirmasi bukti transfer jika sudah melakukan pembayaran ya Pak. Terima k
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800/60 text-[11px] text-center sm:text-left">
           <div>
-            © 2026 kontrakin. Didesain khusus untuk Juragan Kontrakan & Indekos di Indonesia.
+            © 2026 KontrakinAja!. Didesain khusus untuk Juragan Kontrakan & Indekos di Indonesia.
           </div>
           <div className="flex items-center justify-center gap-1.5 text-emerald-600 dark:text-emerald-400">
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />

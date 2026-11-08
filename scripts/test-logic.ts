@@ -189,10 +189,10 @@ const contractWaUrl = generateContractWhatsAppUrl({
   tenantPhone: '081288991122',
   propertyName: 'Kontrakan Melati No 1',
   contractNumber: ctrNum,
-  origin: 'https://kontrakin.com',
+  origin: 'https://kontrakinaja.com',
 });
 assert(contractWaUrl.includes('https://wa.me/6281288991122?text='), 'Contract WA routes to tenant phone');
-assert(decodeURIComponent(contractWaUrl).includes('https://kontrakin.com/kontrak/ctr-123'), 'Contract WA includes signing link');
+assert(decodeURIComponent(contractWaUrl).includes('https://kontrakinaja.com/kontrak/ctr-123'), 'Contract WA includes signing link');
 
 // Test tenant phone target specifically (e.g. Ahmad Faqih 082348635212) vs owner phone
 const ahmadFaqihContractWa = generateContractWhatsAppUrl({
@@ -217,7 +217,7 @@ const tenantSignedNotificationUrl = generateTenantSignedNotificationUrl({
   tenantName: 'Budi Santoso',
   propertyName: 'Kontrakan Melati No 1',
   contractNumber: ctrNum,
-  origin: 'https://kontrakin.com',
+  origin: 'https://kontrakinaja.com',
   contractId: 'ctr-123',
 });
 assert(tenantSignedNotificationUrl.includes('https://wa.me/6281234567890?text='), 'Tenant signed notification routes to owner phone');

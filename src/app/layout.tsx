@@ -5,7 +5,7 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'Kontrakin - Manajemen Rumah Kontrakan Mandiri',
+  title: 'KontrakinAja! - Manajemen Rumah Kontrakan Mandiri',
   description:
     'Aplikasi manajemen sewa kontrakan personal: pengingat jatuh tempo otomatis, kirim tagihan WhatsApp 1-klik, katalog sewa online, dan kontrak sewa digital legal.',
   manifest: '/manifest.json',
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Kontrakin',
+    title: 'KontrakinAja!',
   },
 };
 

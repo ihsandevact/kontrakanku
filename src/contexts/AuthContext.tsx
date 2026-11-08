@@ -36,16 +36,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_USERS_KEY = 'kontrakin_registered_users_v1';
-const LEGACY_STORAGE_USERS_KEY = 'sewapribadi_registered_users_v1';
+const LOCAL_STORAGE_USERS_KEY = 'kontrakinaja_registered_users_v1';
+const LEGACY_STORAGE_USERS_KEY = 'kontrakin_registered_users_v1';
+const OLD_LEGACY_STORAGE_USERS_KEY = 'sewapribadi_registered_users_v1';
 
 function getLocalRegisteredUsers(): any[] {
   if (typeof window === 'undefined') return [];
   try {
     let raw = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
     if (!raw) {
-      // Check legacy key and migrate seamlessly
-      raw = localStorage.getItem(LEGACY_STORAGE_USERS_KEY);
+      // Check legacy keys and migrate seamlessly
+      raw =
+        localStorage.getItem(LEGACY_STORAGE_USERS_KEY) ||
+        localStorage.getItem(OLD_LEGACY_STORAGE_USERS_KEY);
       if (raw) {
         localStorage.setItem(LOCAL_STORAGE_USERS_KEY, raw);
       }
@@ -251,7 +254,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
-        setUser({ id: demoProfile.id, email: email || 'demo@kontrakin.com' } as User);
+        setUser({ id: demoProfile.id, email: email || 'demo@kontrakinaja.com' } as User);
         setProfile(demoProfile);
         setAuthSession(true, demoProfile.id, email, demoProfile);
         setIsLoading(false);

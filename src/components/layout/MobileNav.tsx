@@ -73,7 +73,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
             </div>
             <div className="flex flex-col min-w-0 justify-center">
               <span className="leading-tight tracking-tight text-slate-900 dark:text-white font-bold text-sm truncate max-w-[170px] xs:max-w-[220px]">
-                {profile?.business_name || 'kontrakin'}
+                {profile?.business_name || 'KontrakinAja!'}
               </span>
               <span className="text-[10px] leading-tight font-medium text-slate-500 dark:text-slate-400 truncate max-w-[170px] xs:max-w-[220px] mt-0.5">
                 {profile?.owner_name || 'Manajemen Mandiri'}

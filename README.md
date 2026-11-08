@@ -1,4 +1,4 @@
-# SewaPribadi - Aplikasi Manajemen Rumah Kontrakan Mandiri
+# KontrakinAja! - Aplikasi Manajemen Rumah Kontrakan Mandiri
 
 Aplikasi web & Progressive Web App (PWA) untuk manajemen properti sewa kontrakan personal dengan arsitektur **Zero Cost (Rp 0/bulan)**:
 - **Pengingat Jatuh Tempo Otomatis:** Memonitor status unit (*Aktif Lancar*, *Mendekati Tempo*, *Jatuh Tempo*, dan *Kosong*).

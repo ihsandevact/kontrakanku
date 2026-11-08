@@ -27,12 +27,12 @@ import {
 import { calculateNextDueDate, evaluateLeaseStatus } from './billing';
 
 const STORAGE_KEYS = {
-  PROPERTIES: 'kontrakin_properties_v1',
-  LEASES: 'kontrakin_leases_v1',
-  APPLICATIONS: 'kontrakin_applications_v1',
-  TRANSACTIONS: 'kontrakin_transactions_v1',
-  SETTINGS: 'kontrakin_settings_v1',
-  CONTRACTS: 'kontrakin_contracts_v1',
+  PROPERTIES: 'kontrakinaja_properties_v1',
+  LEASES: 'kontrakinaja_leases_v1',
+  APPLICATIONS: 'kontrakinaja_applications_v1',
+  TRANSACTIONS: 'kontrakinaja_transactions_v1',
+  SETTINGS: 'kontrakinaja_settings_v1',
+  CONTRACTS: 'kontrakinaja_contracts_v1',
 };
 
 // --- Local Storage Helpers ---
@@ -45,10 +45,11 @@ function loadFromStorage<T>(key: string, defaultValue: T): T {
   if (typeof window === 'undefined') return defaultValue;
   try {
     let raw = localStorage.getItem(key);
-    if (!raw && key.startsWith('kontrakin_')) {
-      // Check legacy sewapribadi key and auto-migrate forward
-      const legacyKey = key.replace('kontrakin_', 'sewapribadi_');
-      const legacyRaw = localStorage.getItem(legacyKey);
+    if (!raw && key.startsWith('kontrakinaja_')) {
+      // Check legacy kontrakin_ and sewapribadi_ keys and auto-migrate forward
+      const legacyKey1 = key.replace('kontrakinaja_', 'kontrakin_');
+      const legacyKey2 = key.replace('kontrakinaja_', 'sewapribadi_');
+      const legacyRaw = localStorage.getItem(legacyKey1) || localStorage.getItem(legacyKey2);
       if (legacyRaw) {
         raw = legacyRaw;
         localStorage.setItem(key, legacyRaw);
@@ -86,6 +87,13 @@ export function cleanLocalStorageBusinessData(): void {
     STORAGE_KEYS.TRANSACTIONS,
     STORAGE_KEYS.SETTINGS,
     STORAGE_KEYS.CONTRACTS,
+    'kontrakin_properties_v1',
+    'kontrakin_leases_v1',
+    'kontrakin_applications_v1',
+    'kontrakin_transactions_v1',
+    'kontrakin_settings_v1',
+    'kontrakin_contracts_v1',
+    'kontrakin_registered_users_v1',
     'sewapribadi_properties_v1',
     'sewapribadi_leases_v1',
     'sewapribadi_applications_v1',
@@ -1005,6 +1013,7 @@ export async function getLandlordProfileBySlug(slug: string): Promise<LandlordPr
     if (cached && cached.slug === cleanSlug) return cached;
 
     const rawUsers =
+      localStorage.getItem('kontrakinaja_registered_users_v1') ||
       localStorage.getItem('kontrakin_registered_users_v1') ||
       localStorage.getItem('sewapribadi_registered_users_v1');
     if (rawUsers) {

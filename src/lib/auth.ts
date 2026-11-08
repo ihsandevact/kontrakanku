@@ -3,12 +3,15 @@ import { isSupabaseConfigured, supabase } from './supabase/client';
 import { getSettings, saveSettings, cleanLocalStorageBusinessData } from './storage';
 
 export const DEFAULT_OWNER_PIN = '123456';
-export const AUTH_SESSION_KEY = 'kontrakin_auth_session';
-export const LEGACY_AUTH_SESSION_KEY = 'sewapribadi_auth_session';
-export const AUTH_COOKIE_NAME = 'kontrakin_auth_token';
-export const LEGACY_AUTH_COOKIE_NAME = 'sewapribadi_auth_token';
-export const PROFILE_SESSION_KEY = 'kontrakin_landlord_profile';
-export const LEGACY_PROFILE_SESSION_KEY = 'sewapribadi_landlord_profile';
+export const AUTH_SESSION_KEY = 'kontrakinaja_auth_session';
+export const LEGACY_AUTH_SESSION_KEY = 'kontrakin_auth_session';
+export const OLD_LEGACY_AUTH_SESSION_KEY = 'sewapribadi_auth_session';
+export const AUTH_COOKIE_NAME = 'kontrakinaja_auth_token';
+export const LEGACY_AUTH_COOKIE_NAME = 'kontrakin_auth_token';
+export const OLD_LEGACY_AUTH_COOKIE_NAME = 'sewapribadi_auth_token';
+export const PROFILE_SESSION_KEY = 'kontrakinaja_landlord_profile';
+export const LEGACY_PROFILE_SESSION_KEY = 'kontrakin_landlord_profile';
+export const OLD_LEGACY_PROFILE_SESSION_KEY = 'sewapribadi_landlord_profile';
 
 export interface SessionPayload {
   authenticated: boolean;
@@ -74,10 +77,11 @@ export function isAuthenticated(): boolean {
   if (typeof window === 'undefined') return false;
 
   try {
-    // 1. Check localStorage session (with legacy fallback)
+    // 1. Check localStorage session (with multi-tier legacy fallback)
     const raw =
       localStorage.getItem(AUTH_SESSION_KEY) ||
-      localStorage.getItem(LEGACY_AUTH_SESSION_KEY);
+      localStorage.getItem(LEGACY_AUTH_SESSION_KEY) ||
+      localStorage.getItem(OLD_LEGACY_AUTH_SESSION_KEY);
     if (raw) {
       const session: SessionPayload = JSON.parse(raw);
       if (session.authenticated && new Date(session.expiresAt) > new Date()) {
@@ -92,7 +96,8 @@ export function isAuthenticated(): boolean {
         const trimmed = item.trim();
         return (
           trimmed.startsWith(`${AUTH_COOKIE_NAME}=`) ||
-          trimmed.startsWith(`${LEGACY_AUTH_COOKIE_NAME}=`)
+          trimmed.startsWith(`${LEGACY_AUTH_COOKIE_NAME}=`) ||
+          trimmed.startsWith(`${OLD_LEGACY_AUTH_COOKIE_NAME}=`)
         );
       });
 
@@ -110,7 +115,8 @@ export function getCachedProfile(): LandlordProfile | null {
   try {
     const raw =
       localStorage.getItem(PROFILE_SESSION_KEY) ||
-      localStorage.getItem(LEGACY_PROFILE_SESSION_KEY);
+      localStorage.getItem(LEGACY_PROFILE_SESSION_KEY) ||
+      localStorage.getItem(OLD_LEGACY_PROFILE_SESSION_KEY);
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -158,11 +164,14 @@ export function clearAuthSession(): void {
 
   localStorage.removeItem(AUTH_SESSION_KEY);
   localStorage.removeItem(LEGACY_AUTH_SESSION_KEY);
+  localStorage.removeItem(OLD_LEGACY_AUTH_SESSION_KEY);
   localStorage.removeItem(PROFILE_SESSION_KEY);
   localStorage.removeItem(LEGACY_PROFILE_SESSION_KEY);
+  localStorage.removeItem(OLD_LEGACY_PROFILE_SESSION_KEY);
   cleanLocalStorageBusinessData();
   document.cookie = `${AUTH_COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
   document.cookie = `${LEGACY_AUTH_COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+  document.cookie = `${OLD_LEGACY_AUTH_COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
 }
 
 /**

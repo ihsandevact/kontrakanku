@@ -93,7 +93,7 @@ export default function RegisterPage() {
               <span>Pendaftaran Pemilik Mandiri</span>
             </span>
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1.5 tracking-tight">
-              Daftar Akun <span className="text-emerald-600 dark:text-emerald-400">kontrakin</span>
+              Daftar Akun <span className="text-emerald-600 dark:text-emerald-400">KontrakinAja!</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 leading-relaxed">
               Mulai kelola unit kontrakan Anda dengan rapi, tagihan WhatsApp otomatis, dan dapatkan web katalog online gratis.
@@ -147,7 +147,7 @@ export default function RegisterPage() {
                     Tautan Web Etalase:
                   </span>{' '}
                   <span className="font-mono font-bold text-emerald-700 dark:text-emerald-300">
-                    kontrakin.com/katalog/{previewSlug}
+                    kontrakinaja.com/katalog/{previewSlug}
                   </span>
                 </div>
               </div>
@@ -302,7 +302,7 @@ export default function RegisterPage() {
               className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
             >
               <Home className="w-3.5 h-3.5" />
-              <span>Kembali ke Beranda Kontrakin</span>
+              <span>Kembali ke Beranda KontrakinAja!</span>
             </Link>
           </div>
         </div>

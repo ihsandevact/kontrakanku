@@ -90,7 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="tracking-tight text-slate-900 dark:text-white font-black text-lg leading-none">
-                  kontrak<span className="text-emerald-600 dark:text-emerald-400">in</span>
+                  Kontrakin<span className="text-emerald-600 dark:text-emerald-400">Aja!</span>
                 </span>
                 <span className="inline-flex items-center px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 leading-none">
                   Juragan

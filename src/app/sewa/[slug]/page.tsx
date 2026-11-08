@@ -159,7 +159,7 @@ function LandlordSewaContent() {
           Formulir Tidak Ditemukan
         </h2>
         <p className="text-xs text-slate-500 leading-relaxed">
-          Pemilik kontrakan dengan tautan <code className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-emerald-600">/sewa/{slug}</code> tidak terdaftar di sistem Kontrakin.
+          Pemilik kontrakan dengan tautan <code className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-emerald-600">/sewa/{slug}</code> tidak terdaftar di sistem KontrakinAja!.
         </p>
         <div className="pt-2">
           <Link

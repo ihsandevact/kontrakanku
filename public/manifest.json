@@ -1,6 +1,6 @@
 {
-  "name": "Kontrakin - Manajemen Rumah Kontrakan Mandiri",
-  "short_name": "kontrakin",
+  "name": "KontrakinAja! - Manajemen Rumah Kontrakan Mandiri",
+  "short_name": "KontrakinAja!",
   "description": "Aplikasi manajemen sewa kontrakan personal: pengingat jatuh tempo otomatis, kirim tagihan WhatsApp 1-klik, dan pencatatan laba bersih.",
   "start_url": "/",
   "display": "standalone",
