@@ -43,6 +43,7 @@ function LandlordCatalogContent() {
   const [notFound, setNotFound] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
 
+  // Initial data loading - strictly dependent only on slug to prevent modal re-fetch flicker
   useEffect(() => {
     async function load() {
       if (!slug) return;
@@ -58,7 +59,7 @@ function LandlordCatalogContent() {
           const l = await getLeases(res.landlord.id);
           setLeases(l);
 
-          // Deep-linking: auto-open modal if ?unit= matches a property
+          // Deep-linking: auto-open modal once on initial load if ?unit= matches
           if (initialUnitId && res.properties) {
             const matched = res.properties.find((p) => p.id === initialUnitId);
             if (matched) setSelectedProperty(matched);
@@ -72,15 +73,34 @@ function LandlordCatalogContent() {
       }
     }
     load();
-  }, [slug, initialUnitId]);
+  }, [slug]);
 
-  // Deep-linking URL sync helpers
+  // Handle browser back/forward buttons smoothly without page reload
+  useEffect(() => {
+    const handlePopState = () => {
+      if (typeof window === 'undefined') return;
+      const unit = new URLSearchParams(window.location.search).get('unit');
+      if (unit && properties.length > 0) {
+        const matched = properties.find((p) => p.id === unit);
+        setSelectedProperty(matched || null);
+      } else {
+        setSelectedProperty(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [properties]);
+
+  // Deep-linking URL sync helpers (instant 0ms without page re-fetch)
   const handleOpenDetail = (prop: Property) => {
     setSelectedProperty(prop);
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
-      url.searchParams.set('unit', prop.id);
-      window.history.replaceState(null, '', url.toString());
+      if (url.searchParams.get('unit') !== prop.id) {
+        url.searchParams.set('unit', prop.id);
+        window.history.pushState({ unitId: prop.id }, '', url.toString());
+      }
     }
   };
 
@@ -88,8 +108,10 @@ function LandlordCatalogContent() {
     setSelectedProperty(null);
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
-      url.searchParams.delete('unit');
-      window.history.replaceState(null, '', url.toString());
+      if (url.searchParams.has('unit')) {
+        url.searchParams.delete('unit');
+        window.history.replaceState(null, '', url.pathname + (url.search ? url.search : ''));
+      }
     }
   };
 

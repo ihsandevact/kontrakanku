@@ -179,28 +179,28 @@ function LandlordSewaContent() {
   const rawPhone = landlord?.phone || '';
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="w-full max-w-2xl mx-auto space-y-4 sm:space-y-6 overflow-hidden">
       {/* Navigation Back */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between min-w-0">
         <Link
           href={`/katalog/${slug}`}
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition min-w-0"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Kembali ke Katalog {landlord.business_name}</span>
+          <ArrowLeft className="w-4 h-4 shrink-0" />
+          <span className="truncate max-w-[260px] xs:max-w-none">Kembali ke Katalog {landlord.business_name}</span>
         </Link>
       </div>
 
       {/* Header Banner */}
-      <div className="p-6 rounded-3xl bg-gradient-to-br from-emerald-800 via-teal-800 to-slate-900 text-white shadow-md border border-emerald-700/30 space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-          <Building2 className="w-3.5 h-3.5" />
-          <span>{landlord.business_name}</span>
+      <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-800 via-teal-800 to-slate-900 text-white shadow-md border border-emerald-700/30 space-y-2">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 max-w-full">
+          <Building2 className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">{landlord.business_name}</span>
         </div>
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white break-words">
           Formulir Pendaftaran Calon Penyewa
         </h1>
-        <p className="text-xs sm:text-sm text-emerald-100/80 leading-relaxed">
+        <p className="text-xs sm:text-sm text-emerald-100/80 leading-relaxed break-words">
           Silakan isi data diri Anda dengan benar. Data Anda diteruskan langsung ke pemilik kontrakan (<strong>{landlord.owner_name}</strong>) untuk proses survei dan penandatanganan kontrak sewa.
         </p>
       </div>
@@ -236,12 +236,12 @@ function LandlordSewaContent() {
           )}
         </div>
       ) : (
-        <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-6">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm space-y-5 sm:space-y-6 w-full min-w-0 box-border">
           {/* Unit Selection Preview Card */}
           {selectedPropertyObj && (
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 w-full min-w-0">
+              <div className="flex items-center gap-3 min-w-0 flex-1 w-full sm:w-auto">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700">
                   {selectedPropertyObj.photos?.[0] || selectedPropertyObj.photo_url ? (
                     <img
                       src={selectedPropertyObj.photos?.[0] || selectedPropertyObj.photo_url || ''}
@@ -254,25 +254,25 @@ function LandlordSewaContent() {
                     </div>
                   )}
                 </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white truncate max-w-[150px] xs:max-w-[200px] sm:max-w-none">
                       {selectedPropertyObj.name}
                     </span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
                       Unit Terpilih
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 truncate mt-0.5">
+                  <p className="text-[11px] sm:text-xs text-slate-500 truncate mt-0.5">
                     {selectedPropertyObj.address || 'Katalog Resmi Unit'}
                   </p>
                 </div>
               </div>
 
               {selectedPropertyObj.monthly_rate && (
-                <div className="text-left sm:text-right shrink-0">
+                <div className="w-full sm:w-auto flex items-center justify-between sm:flex-col sm:items-end pt-2 sm:pt-0 border-t border-slate-200/60 dark:border-slate-800 sm:border-0 shrink-0">
                   <div className="flex items-baseline sm:justify-end gap-1">
-                    <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
+                    <span className="text-sm sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400">
                       {formatRupiah(selectedPropertyObj.monthly_rate)}
                     </span>
                     <span className="text-[11px] text-slate-400">/ bln</span>
@@ -285,9 +285,9 @@ function LandlordSewaContent() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 w-full min-w-0">
             {/* Unit Kontrakan */}
-            <div>
+            <div className="w-full min-w-0">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Unit Kontrakan yang Diminati <span className="text-rose-500">*</span>
               </label>
@@ -304,148 +304,148 @@ function LandlordSewaContent() {
               />
             </div>
 
-          {/* Grid Nama & WhatsApp */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Nama Lengkap Calon Penyewa <span className="text-rose-500">*</span>
-              </label>
-              <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            {/* Grid Nama & WhatsApp */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full">
+              <div className="min-w-0">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Nama Lengkap Calon Penyewa <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Contoh: Muhammad Reza"
+                    className="w-full max-w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 box-border"
+                  />
+                </div>
+              </div>
+
+              <div className="min-w-0">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Nomor WhatsApp Aktif <span className="text-rose-500">*</span>
+                </label>
+                <div className="relative">
+                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="081234567890"
+                    className="w-full max-w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 box-border"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Grid NIK & Pekerjaan */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full">
+              <div className="min-w-0">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Nomor KTP / NIK (Opsional)
+                </label>
                 <input
                   type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Contoh: Muhammad Reza"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  value={nik}
+                  onChange={(e) => setNik(e.target.value)}
+                  placeholder="16 digit nomor NIK"
+                  className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 box-border"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Nomor WhatsApp Aktif <span className="text-rose-500">*</span>
-              </label>
-              <div className="relative">
-                <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <div className="min-w-0">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Pekerjaan / Instansi
+                </label>
                 <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="081234567890"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  type="text"
+                  value={occupation}
+                  onChange={(e) => setOccupation(e.target.value)}
+                  placeholder="Karyawan Swasta / BUMN / Wiraswasta"
+                  className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 box-border"
                 />
               </div>
             </div>
-          </div>
 
-          {/* Grid NIK & Pekerjaan */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Nomor KTP / NIK (Opsional)
-              </label>
-              <input
-                type="text"
-                value={nik}
-                onChange={(e) => setNik(e.target.value)}
-                placeholder="16 digit nomor NIK"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Pekerjaan / Instansi
-              </label>
-              <input
-                type="text"
-                value={occupation}
-                onChange={(e) => setOccupation(e.target.value)}
-                placeholder="Karyawan Swasta / BUMN / Wiraswasta"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-              />
-            </div>
-          </div>
-
-          {/* Siklus Sewa & Tanggal Rencana Masuk */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Pilihan Pembayaran Sewa <span className="text-rose-500">*</span>
-              </label>
-              <CustomSelect
-                value={preferredCycle}
-                onChange={(val) => setPreferredCycle(val as BillingCycle)}
-                title="Pilih Siklus Pembayaran Sewa"
-                options={BILLING_CYCLE_OPTIONS.map((c) => {
-                  const isDisabled = minRentalMonths > 1 && c.months < minRentalMonths;
-                  return {
-                    value: c.id,
-                    label: c.label,
-                    disabled: isDisabled,
-                    description: isDisabled ? `Batas minimal sewa unit ini adalah ${minRentalMonths} bulan` : undefined,
-                  };
-                })}
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Rencana Tanggal Mulai Masuk <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="date"
-                required
-                value={moveInDate}
-                onChange={(e) => setMoveInDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-              />
-            </div>
-          </div>
-
-          {/* Catatan */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Catatan / Permintaan Khusus
-            </label>
-            <textarea
-              rows={3}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Jumlah anggota keluarga yang ikut tinggal, kendaraan yang dibawa, dsb."
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
-            />
-          </div>
-
-          {/* Privacy & Trust Badge */}
-          <div className="p-3.5 rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200 flex items-center gap-2.5">
-            <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <span>
-              Data Anda terlindungi & diteruskan langsung ke pemilik kontrakan ({landlord.owner_name}) tanpa perantara.
-            </span>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting || properties.length === 0}
-            className="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2 disabled:opacity-50 active:scale-[0.99] cursor-pointer"
-          >
-            {isSubmitting ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Mengirimkan Permohonan Sewa...</span>
+            {/* Siklus Sewa & Tanggal Rencana Masuk */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full">
+              <div className="min-w-0">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Pilihan Pembayaran Sewa <span className="text-rose-500">*</span>
+                </label>
+                <CustomSelect
+                  value={preferredCycle}
+                  onChange={(val) => setPreferredCycle(val as BillingCycle)}
+                  title="Pilih Siklus Pembayaran Sewa"
+                  options={BILLING_CYCLE_OPTIONS.map((c) => {
+                    const isDisabled = minRentalMonths > 1 && c.months < minRentalMonths;
+                    return {
+                      value: c.id,
+                      label: c.label,
+                      disabled: isDisabled,
+                      description: isDisabled ? `Batas minimal sewa unit ini adalah ${minRentalMonths} bulan` : undefined,
+                    };
+                  })}
+                />
               </div>
-            ) : (
-              <>
-                <Send className="w-4 h-4" />
-                <span>Kirim Permohonan Sewa Mandiri</span>
-              </>
-            )}
-          </button>
-        </form>
+
+              <div className="min-w-0">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Rencana Tanggal Mulai Masuk <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={moveInDate}
+                  onChange={(e) => setMoveInDate(e.target.value)}
+                  className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 box-border appearance-none"
+                />
+              </div>
+            </div>
+
+            {/* Catatan */}
+            <div className="w-full min-w-0">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Catatan / Permintaan Khusus
+              </label>
+              <textarea
+                rows={3}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Jumlah anggota keluarga yang ikut tinggal, kendaraan yang dibawa, dsb."
+                className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-base sm:text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 box-border resize-y"
+              />
+            </div>
+
+            {/* Privacy & Trust Badge */}
+            <div className="p-3 sm:p-3.5 rounded-2xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-200 flex items-start sm:items-center gap-2.5 w-full min-w-0">
+              <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5 sm:mt-0" />
+              <span className="leading-relaxed break-words flex-1 min-w-0">
+                Data Anda terlindungi & diteruskan langsung ke pemilik kontrakan ({landlord.owner_name}) tanpa perantara.
+              </span>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting || properties.length === 0}
+              className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2 disabled:opacity-50 active:scale-[0.99] cursor-pointer box-border"
+            >
+              {isSubmitting ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Mengirimkan Permohonan Sewa...</span>
+                </div>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 shrink-0" />
+                  <span>Kirim Permohonan Sewa Mandiri</span>
+                </>
+              )}
+            </button>
+          </form>
       </div>
       )}
     </div>

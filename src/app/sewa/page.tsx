@@ -117,52 +117,54 @@ function TenantRegistrationFormContent() {
   const selectedProp = properties.find((p) => p.id === propertyId);
 
   return (
-    <div className="max-w-xl mx-auto space-y-6">
+    <div className="w-full max-w-xl mx-auto space-y-4 sm:space-y-6 overflow-hidden">
       {/* Back button & Title */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between min-w-0">
         <Link
           href="/katalog"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition min-w-0"
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
+          <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
           <span>Kembali ke Katalog Unit</span>
         </Link>
-        <span className="text-[11px] font-medium text-slate-400">
+        <span className="text-[11px] font-medium text-slate-400 shrink-0">
           Formulir Mandiri
         </span>
       </div>
 
-      <div className="bg-white dark:bg-slate-900/95 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900/95 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden w-full min-w-0 box-border">
         {/* Header Form */}
-        <div className="p-5 sm:p-6 bg-gradient-to-r from-emerald-800 to-teal-800 text-white space-y-1.5">
+        <div className="p-4 sm:p-6 bg-gradient-to-r from-emerald-800 to-teal-800 text-white space-y-1.5 break-words">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-emerald-200 border border-white/20 uppercase tracking-wider">
             Pendaftaran Calon Penyewa
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white break-words">
             Formulir Minat Sewa Kontrakan
           </h1>
-          <p className="text-xs sm:text-sm text-emerald-100/80">
+          <p className="text-xs sm:text-sm text-emerald-100/80 leading-relaxed break-words">
             Isi data diri Anda di bawah ini. Data Anda aman dan akan langsung diteruskan ke pemilik kontrakan untuk konfirmasi jadwal survei.
           </p>
         </div>
 
         {/* Selected Unit Indicator */}
         {selectedProp && (
-          <div className="p-4 bg-emerald-500/10 dark:bg-emerald-950/30 border-b border-emerald-500/20 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <div>
-                <span className="text-slate-400 text-[10px] uppercase font-bold block">
+          <div className="p-3.5 sm:p-4 bg-emerald-500/10 dark:bg-emerald-950/30 border-b border-emerald-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs w-full min-w-0">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <Building2 className="w-4 h-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className="text-slate-400 text-[10px] uppercase font-bold block leading-none mb-1">
                   Unit yang Dipilih:
                 </span>
-                <span className="font-bold text-slate-900 dark:text-white">
+                <span className="font-bold text-slate-900 dark:text-white truncate block">
                   {selectedProp.name}
                 </span>
               </div>
             </div>
-            <div className="text-right">
+            <div className="w-full sm:w-auto flex items-center justify-between sm:flex-col sm:items-end pt-2 sm:pt-0 border-t border-emerald-500/20 sm:border-0 shrink-0">
               {selectedProp.monthly_rate && (
-                <div className="font-bold text-emerald-700 dark:text-emerald-300">
+                <div className="font-bold text-emerald-700 dark:text-emerald-300 text-sm sm:text-xs">
                   Rp {selectedProp.monthly_rate.toLocaleString('id-ID')} / bln
                 </div>
               )}
@@ -176,33 +178,35 @@ function TenantRegistrationFormContent() {
         )}
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 w-full min-w-0">
           {/* Pilih Unit */}
-          <CustomSelect
-            label="Pilih Unit Rumah Kontrakan"
-            required
-            value={propertyId}
-            onChange={handlePropertyChange}
-            title="Pilih Unit Rumah Kontrakan"
-            options={properties.map((p) => ({
-              value: p.id,
-              label: p.name,
-              description: p.address || undefined,
-            }))}
-            className="bg-slate-50 dark:bg-slate-950"
-          />
+          <div className="w-full min-w-0">
+            <CustomSelect
+              label="Pilih Unit Rumah Kontrakan"
+              required
+              value={propertyId}
+              onChange={handlePropertyChange}
+              title="Pilih Unit Rumah Kontrakan"
+              options={properties.map((p) => ({
+                value: p.id,
+                label: p.name,
+                description: p.address || undefined,
+              }))}
+              className="bg-slate-50 dark:bg-slate-950"
+            />
+          </div>
 
           <hr className="border-slate-100 dark:border-slate-800" />
 
           {/* Section: Identitas Calon Penyewa */}
-          <div className="space-y-3.5">
+          <div className="space-y-3.5 w-full min-w-0">
             <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
               <User className="w-3.5 h-3.5" />
               <span>Identitas Calon Penyewa</span>
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full">
+              <div className="min-w-0">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Nama Lengkap *
                 </label>
@@ -212,11 +216,11 @@ function TenantRegistrationFormContent() {
                   placeholder="Sesuai KTP"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 box-border"
                 />
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Nomor WhatsApp Aktif *
                 </label>
@@ -226,13 +230,13 @@ function TenantRegistrationFormContent() {
                   placeholder="0812xxxxxxxx"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                  className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 font-mono box-border"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full">
+              <div className="min-w-0">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Nomor KTP / NIK (Opsional)
                 </label>
@@ -241,11 +245,11 @@ function TenantRegistrationFormContent() {
                   placeholder="16 digit NIK"
                   value={nik}
                   onChange={(e) => setNik(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                  className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 font-mono box-border"
                 />
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Pekerjaan / Profesi
                 </label>
@@ -254,7 +258,7 @@ function TenantRegistrationFormContent() {
                   placeholder="Contoh: Karyawan Swasta, PNS, dll"
                   value={occupation}
                   onChange={(e) => setOccupation(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 box-border"
                 />
               </div>
             </div>
@@ -263,14 +267,14 @@ function TenantRegistrationFormContent() {
           <hr className="border-slate-100 dark:border-slate-800" />
 
           {/* Section: Rencana Hunian & Sewa */}
-          <div className="space-y-3.5">
+          <div className="space-y-3.5 w-full min-w-0">
             <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5" />
               <span>Rencana Tinggal & Siklus Pembayaran</span>
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 w-full">
+              <div className="min-w-0">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Jumlah Penghuni yang Akan Tinggal *
                 </label>
@@ -281,14 +285,14 @@ function TenantRegistrationFormContent() {
                   required
                   value={familyMembers}
                   onChange={(e) => setFamilyMembers(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                  className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 font-bold box-border"
                 />
                 <span className="text-[10px] text-slate-400 block mt-0.5">
                   Termasuk anak atau keluarga inti
                 </span>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Rencana Tanggal Mulai Masuk *
                 </label>
@@ -297,13 +301,13 @@ function TenantRegistrationFormContent() {
                   required
                   value={moveInDate}
                   onChange={(e) => setMoveInDate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+                  className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 font-medium box-border appearance-none"
                 />
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1">
+            <div className="w-full min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                   Pilihan Siklus Pembayaran Sewa *
                 </label>
@@ -331,14 +335,14 @@ function TenantRegistrationFormContent() {
                 })}
                 className="bg-slate-50 dark:bg-slate-950 font-medium"
               />
-              <p className="text-[11px] text-slate-500 mt-1">
+              <p className="text-[11px] text-slate-500 mt-1 leading-relaxed break-words">
                 {selectedProp?.min_rental_months && selectedProp.min_rental_months > 1
                   ? `Unit ini memiliki ketentuan minimal sewa ${selectedProp.min_rental_months === 12 ? '1 Tahun' : `${selectedProp.min_rental_months} Bulan`}. Pilihan durasi di bawahnya dinonaktifkan.`
                   : 'Unit ini fleksibel (bebas memilih mulai dari 1 bulan).'}
               </p>
             </div>
 
-            <div>
+            <div className="w-full min-w-0">
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Catatan / Pertanyaan Tambahan (Opsional)
               </label>
@@ -347,14 +351,14 @@ function TenantRegistrationFormContent() {
                 placeholder="Contoh: Apakah boleh membawa hewan peliharaan kecil? Kapan bisa survei lokasi?"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full max-w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-1 focus:ring-emerald-500 box-border resize-y"
               />
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-950 text-xs text-slate-500 flex items-start gap-2 border border-slate-200 dark:border-slate-800">
-            <ShieldCheck className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-            <span>
+          <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-950 text-xs text-slate-500 flex items-start gap-2 border border-slate-200 dark:border-slate-800 w-full min-w-0">
+            <ShieldCheck className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+            <span className="leading-relaxed break-words flex-1 min-w-0">
               Setelah mengirim formulir, Anda dapat langsung mengonfirmasi pengajuan Anda ke WhatsApp pemilik kontrakan.
             </span>
           </div>
@@ -363,9 +367,9 @@ function TenantRegistrationFormContent() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm shadow-md transition disabled:opacity-50"
+            className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm shadow-md transition disabled:opacity-50 box-border cursor-pointer active:scale-[0.99]"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-4 h-4 shrink-0" />
             <span>{isSubmitting ? 'Mengirim Formulir...' : 'Kirim Formulir Pendaftaran Sewa'}</span>
           </button>
         </form>
