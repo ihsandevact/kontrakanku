@@ -10,10 +10,12 @@ import {
   ArrowRight,
   Building2,
   Calendar,
+  Check,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Clock,
+  Copy,
   Droplets,
   ExternalLink,
   Flame,
@@ -21,6 +23,7 @@ import {
   MapPin,
   MessageSquare,
   Phone,
+  Share2,
   ShieldCheck,
   Sparkles,
   Zap,
@@ -48,10 +51,12 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
   applyUrl,
 }) => {
   const [activePhotoIndex, setActivePhotoIndex] = useState<number>(0);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
 
-  // Reset active photo index when opened or property changed
+  // Reset active photo index and copied state when opened or property changed
   useEffect(() => {
     setActivePhotoIndex(0);
+    setIsCopied(false);
   }, [property?.id, isOpen]);
 
   if (!property) return null;
@@ -75,6 +80,16 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
   const handleNextPhoto = (e: React.MouseEvent) => {
     e.stopPropagation();
     setActivePhotoIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
+  };
+
+  // Copy shareable direct deep-link
+  const handleCopyLink = () => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('unit', property.id);
+    navigator.clipboard.writeText(url.toString());
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2500);
   };
 
   // Pricing calculations
@@ -107,7 +122,8 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
       headerAccentBg="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-transparent"
       maxWidth="max-w-2xl"
     >
-      <div className="space-y-6 pb-4">
+      {/* Container with generous horizontal and vertical padding */}
+      <div className="space-y-6 px-4 sm:px-6 py-4 sm:py-5">
         {/* Photo Gallery Viewer */}
         <div className="space-y-2.5">
           <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-inner group">
@@ -204,6 +220,35 @@ export const PropertyDetailModal: React.FC<PropertyDetailModalProps> = ({
               ))}
             </div>
           )}
+        </div>
+
+        {/* Shareable Link Bar */}
+        <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 gap-2">
+          <div className="flex items-center gap-2 min-w-0 text-xs text-slate-500 dark:text-slate-400 truncate">
+            <Share2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="truncate">Bagikan link unit ini langsung ke calon penyewa</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer ${
+              isCopied
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
+            }`}
+          >
+            {isCopied ? (
+              <>
+                <Check className="w-3.5 h-3.5" />
+                <span>Link Tersalin!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                <span>Salin Link Unit</span>
+              </>
+            )}
+          </button>
         </div>
 
         {/* Pricing & Terms Highlight Card */}
