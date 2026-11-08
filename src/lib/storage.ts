@@ -987,16 +987,19 @@ export async function getLandlordProfileBySlug(slug: string): Promise<LandlordPr
   if (!slug) return null;
   const cleanSlug = slug.toLowerCase().trim();
 
+  // 1. Try querying Supabase profiles table
   if (isSupabaseConfigured() && supabase) {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('slug', cleanSlug)
-      .maybeSingle();
-    if (!error && data) return data as LandlordProfile;
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('slug', cleanSlug)
+        .maybeSingle();
+      if (!error && data) return data as LandlordProfile;
+    } catch {}
   }
 
-  // Fallback to local cached profile or registered users
+  // 2. Try browser localStorage if available (same tab)
   if (typeof window !== 'undefined') {
     const cached = getCachedProfile();
     if (cached && cached.slug === cleanSlug) return cached;
@@ -1011,24 +1014,62 @@ export async function getLandlordProfileBySlug(slug: string): Promise<LandlordPr
         if (match) return match.profile as LandlordProfile;
       } catch {}
     }
+  }
 
-    // Default demo slug fallback
-    if (cleanSlug === 'kontrakan-berkah' || cleanSlug === 'demo') {
-      return {
-        id: 'demo-landlord-01',
-        slug: 'kontrakan-berkah',
-        business_name: 'Kontrakan Berkah Makmur',
-        owner_name: 'Ahmad Fauzi',
-        phone: '081234567890',
-        bank_name: 'BCA',
-        account_number: '8001234567',
-        account_holder: 'Ahmad Fauzi',
-        reminder_days_before: 7,
-        default_cycle: 'semi_annual',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-    }
+  // 3. Fallback for incognito / different session when Supabase Cloud has properties & app_settings
+  if (isSupabaseConfigured() && supabase) {
+    try {
+      // Check if there are properties in Supabase
+      const { data: propData } = await supabase
+        .from('properties')
+        .select('owner_id')
+        .limit(5);
+
+      if (propData && propData.length > 0) {
+        // Fetch app_settings from Supabase
+        const settings = await getSettings();
+        const detectedOwnerId = propData[0]?.owner_id || 'landlord-primary';
+
+        // Convert slug to clean title (e.g. "rumah-kontrak-faqih" -> "Rumah Kontrak Faqih")
+        const words = cleanSlug.split('-').filter(Boolean);
+        const businessName = words.length > 0
+          ? words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+          : 'Kontrakan Mandiri';
+
+        return {
+          id: detectedOwnerId,
+          slug: cleanSlug,
+          business_name: businessName,
+          owner_name: settings?.account_holder || 'Pemilik Kontrakan',
+          phone: settings?.contact_phone || '',
+          bank_name: settings?.bank_name || 'BCA',
+          account_number: settings?.account_number || '',
+          account_holder: settings?.account_holder || '',
+          reminder_days_before: settings?.reminder_days_before || 7,
+          default_cycle: settings?.default_cycle || 'semi_annual',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+      }
+    } catch {}
+  }
+
+  // 4. Default demo slug fallback
+  if (cleanSlug === 'kontrakan-berkah' || cleanSlug === 'demo') {
+    return {
+      id: 'demo-landlord-01',
+      slug: 'kontrakan-berkah',
+      business_name: 'Kontrakan Berkah Makmur',
+      owner_name: 'Ahmad Fauzi',
+      phone: '081234567890',
+      bank_name: 'BCA',
+      account_number: '8001234567',
+      account_holder: 'Ahmad Fauzi',
+      reminder_days_before: 7,
+      default_cycle: 'semi_annual',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
   }
 
   return null;
@@ -1041,26 +1082,31 @@ export async function getPublicPropertiesBySlug(
   if (!landlord) return null;
 
   if (isSupabaseConfigured() && supabase) {
-    const { data, error } = await supabase
-      .from('properties')
-      .select('*')
-      .eq('owner_id', landlord.id)
-      .eq('is_public_listed', true)
-      .order('created_at', { ascending: false });
-
-    if (!error && data) {
-      return { landlord, properties: data as Property[] };
-    }
-
-    if (error && isMissingOwnerIdError(error)) {
-      const fallback = await supabase
+    // 1. Try querying properties matching landlord.id
+    if (landlord.id) {
+      const { data, error } = await supabase
         .from('properties')
         .select('*')
+        .eq('owner_id', landlord.id)
         .order('created_at', { ascending: false });
-      if (!fallback.error && fallback.data) {
-        return { landlord, properties: fallback.data as Property[] };
+
+      if (!error && data && data.length > 0) {
+        const publicProps = data.filter((p: any) => p.is_public_listed !== false);
+        return { landlord, properties: (publicProps.length > 0 ? publicProps : data) as Property[] };
       }
     }
+
+    // 2. Fallback to all listed properties in Supabase
+    const fallback = await supabase
+      .from('properties')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (!fallback.error && fallback.data && fallback.data.length > 0) {
+      const publicProps = fallback.data.filter((p: any) => p.is_public_listed !== false);
+      return { landlord, properties: (publicProps.length > 0 ? publicProps : fallback.data) as Property[] };
+    }
+
     return { landlord, properties: [] };
   }
 
@@ -1069,7 +1115,7 @@ export async function getPublicPropertiesBySlug(
     (p) => (!p.owner_id || p.owner_id === landlord.id) && (p.is_public_listed ?? true)
   );
 
-  return { landlord, properties: matching };
+  return { landlord, properties: matching.length > 0 ? matching : allProps };
 }
 
 export async function submitPublicTenantApplication(
