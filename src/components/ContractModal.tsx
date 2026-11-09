@@ -59,7 +59,7 @@ export const ContractModal: React.FC<ContractModalProps> = ({
   const [resetSuccessMessage, setResetSuccessMessage] = useState<string | null>(null);
   const [targetPhone, setTargetPhone] = useState<string>('');
   const [isEditingPhone, setIsEditingPhone] = useState(false);
-  const [showChangeSigConfirm, setShowChangeSigConfirm] = useState(false);
+  const [isSigning, setIsSigning] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !lease || !property) return;
@@ -163,6 +163,28 @@ export const ContractModal: React.FC<ContractModalProps> = ({
     }
   };
 
+  const handleOwnerClearSignature = async () => {
+    if (!contract) return;
+    setIsSaving(true);
+    try {
+      const updated: LeaseContract = {
+        ...contract,
+        owner_signature: null,
+        owner_signed_at: null,
+        status: contract.tenant_signature ? 'pending_tenant' : 'draft',
+      };
+      await saveContract(updated);
+      setContract(updated);
+      setOwnerSigData(null);
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      console.error('Failed to clear owner signature:', err);
+      alert('Gagal menghapus tanda tangan pemilik.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleCopyLink = () => {
     if (!contract || typeof window === 'undefined') return;
     const url = `${window.location.origin}/kontrak/${contract.id}`;
@@ -232,6 +254,7 @@ export const ContractModal: React.FC<ContractModalProps> = ({
     <ResponsiveModal
       isOpen={isOpen}
       onClose={onClose}
+      dismissible={!isSigning}
       title="Surat Perjanjian Sewa (SPSM) & Tanda Tangan"
       description={`Unit: ${property.name} • Penyewa: ${lease.tenant_name}`}
       icon={<FileText className="w-4 h-4 text-emerald-600" />}
@@ -390,38 +413,15 @@ export const ContractModal: React.FC<ContractModalProps> = ({
                 )}
               </div>
 
-              {hasOwnerSigned ? (
-                <div className="p-3.5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-500/20 flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-28 h-14 bg-white dark:bg-slate-900 rounded-xl border border-emerald-500/30 p-1 flex items-center justify-center">
-                      <img src={contract.owner_signature!} alt="Tanda tangan pemilik" className="max-h-full max-w-full object-contain" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-bold text-slate-900 dark:text-white block">
-                        Tanda Tangan Pemilik Tersimpan
-                      </span>
-                      <span className="text-[11px] text-slate-500">
-                        {contract.owner_name} • {contract.owner_phone}
-                      </span>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowChangeSigConfirm(true)}
-                    className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-emerald-600 underline cursor-pointer"
-                  >
-                    Ganti Tanda Tangan
-                  </button>
-                </div>
-              ) : (
-                <SignaturePad
-                  title="Bubuhkan Tanda Tangan Pemilik di Sini:"
-                  height={150}
-                  onSave={handleOwnerSaveSignature}
-                  initialDataUrl={ownerSigData}
-                />
-              )}
+              <SignaturePad
+                title="Tanda Tangan Pihak Pertama (Pemilik)"
+                subtitle={`${contract.owner_name} • ${contract.owner_phone}`}
+                buttonLabel="Buka Kanvas Tanda Tangan Pemilik"
+                onSave={handleOwnerSaveSignature}
+                onClear={handleOwnerClearSignature}
+                onDialogOpenChange={setIsSigning}
+                initialDataUrl={contract.owner_signature || ownerSigData}
+              />
             </div>
 
             {/* Status Tanda Tangan Penyewa */}
@@ -616,20 +616,6 @@ export const ContractModal: React.FC<ContractModalProps> = ({
         )}
       </div>
 
-      {/* Confirmation Modal for Owner Signature Reset */}
-      <ConfirmModal
-        isOpen={showChangeSigConfirm}
-        onClose={() => setShowChangeSigConfirm(false)}
-        onConfirm={() => {
-          setOwnerSigData(null);
-          setShowChangeSigConfirm(false);
-        }}
-        title="Ubah Tanda Tangan Pemilik"
-        message="Apakah Anda yakin ingin mengganti tanda tangan pemilik saat ini? Anda dapat membubuhkan goresan tanda tangan baru pada kanvas."
-        confirmLabel="Ya, Ganti Tanda Tangan"
-        cancelLabel="Batal"
-        variant="warning"
-      />
     </ResponsiveModal>
   );
 };

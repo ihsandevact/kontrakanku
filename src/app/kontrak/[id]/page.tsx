@@ -430,10 +430,12 @@ export default function TenantContractPage() {
 
           {/* Signature Canvas */}
           <SignaturePad
-            title="Goreskan Tanda Tangan Anda di Sini:"
-            height={160}
+            title="Tanda Tangan Elektronik Penyewa"
+            subtitle={`Halo ${contract.tenant_name}, ketuk tombol di bawah untuk membuka lembar tanda tangan layar luas di ponsel Anda.`}
+            buttonLabel="Buka Lembar Tanda Tangan"
             onSave={(dataUrl) => setTenantSig(dataUrl)}
             onClear={() => setTenantSig(null)}
+            initialDataUrl={tenantSig}
           />
 
           {/* Terms Agreement Checkbox */}

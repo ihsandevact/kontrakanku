@@ -13,6 +13,7 @@ export interface ResponsiveModalProps {
   icon?: React.ReactNode;
   headerAccentBg?: string;
   maxWidth?: string;
+  dismissible?: boolean;
   children: React.ReactNode;
 }
 
@@ -24,6 +25,7 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
   icon,
   headerAccentBg,
   maxWidth = 'max-w-md',
+  dismissible = true,
   children,
 }) => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -68,6 +70,7 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
     return (
       <Drawer.Root
         open={isOpen}
+        dismissible={dismissible}
         onOpenChange={(open) => {
           if (!open) onClose();
         }}
@@ -75,9 +78,13 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-xs transition-opacity" />
           <Drawer.Content className="bg-white dark:bg-slate-900 flex flex-col rounded-t-[24px] max-h-[90vh] fixed bottom-0 left-0 right-0 z-[100] outline-none border-t border-slate-200/80 dark:border-slate-800 shadow-2xl">
-            {/* Visual Drag Handle */}
+            {/* Visual Drag Handle (Hidden when dismissible is false) */}
             <div className="pt-3 pb-1">
-              <Drawer.Handle className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-slate-300 dark:bg-slate-700 cursor-grab active:cursor-grabbing" />
+              {dismissible ? (
+                <Drawer.Handle className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-slate-300 dark:bg-slate-700 cursor-grab active:cursor-grabbing" />
+              ) : (
+                <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-slate-200/50 dark:bg-slate-800/50" />
+              )}
             </div>
 
             {/* Mobile Header */}
