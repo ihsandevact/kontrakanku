@@ -49,9 +49,16 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
   // Dialog Canvas State
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const canvasContainerRef = useRef<HTMLDivElement | null>(null);
+  const isDrawingRef = useRef(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
+  const strokesRef = useRef<Stroke[]>([]);
   const currentStrokeRef = useRef<Stroke>([]);
+
+  // Keep strokesRef in sync with strokes
+  useEffect(() => {
+    strokesRef.current = strokes;
+  }, [strokes]);
 
   // Synchronize initial data URL if parent changes
   useEffect(() => {
@@ -69,6 +76,14 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     }
   }, [isDialogOpen]);
 
+  // Helper to ensure consistent stroke styling
+  const applyStrokeStyle = (ctx: CanvasRenderingContext2D) => {
+    ctx.strokeStyle = '#0f172a'; // Deep slate dark ink
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  };
+
   // Redraw canvas from strokes list
   const redrawCanvas = useCallback((strokeList: Stroke[]) => {
     const canvas = canvasRef.current;
@@ -83,11 +98,8 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     // Clear canvas
     ctx.clearRect(0, 0, width, height);
 
-    // Ink style configuration
-    ctx.strokeStyle = '#0f172a'; // Deep slate ink
-    ctx.lineWidth = 3;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    // Apply ink style
+    applyStrokeStyle(ctx);
 
     for (const stroke of strokeList) {
       if (stroke.length === 0) continue;
@@ -113,21 +125,24 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
 
       const rect = container.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
+      const width = rect.width || container.clientWidth || 320;
+      const height = rect.height || container.clientHeight || 260;
 
       // Set actual resolution
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
 
       // Set display dimensions
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
 
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.scale(dpr, dpr);
+        applyStrokeStyle(ctx);
       }
 
-      redrawCanvas(strokes);
+      redrawCanvas(strokesRef.current);
     };
 
     // Small delay ensures modal animation finishes layout
@@ -138,74 +153,134 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
       clearTimeout(timeoutId);
       window.removeEventListener('resize', setupCanvas);
     };
-  }, [isDialogOpen, redrawCanvas, strokes]);
+  }, [isDialogOpen, redrawCanvas]);
 
-  const getCoordinates = (e: React.PointerEvent<HTMLCanvasElement>): Point => {
+  const getPointFromClient = (clientX: number, clientY: number): Point => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
     return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: clientX - rect.left,
+      y: clientY - rect.top,
     };
   };
 
-  const startDrawing = (e: React.PointerEvent<HTMLCanvasElement>) => {
+  const startDrawingAt = (pt: Point) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch {}
-
-    const pt = getCoordinates(e);
+    isDrawingRef.current = true;
+    setIsDrawing(true);
     currentStrokeRef.current = [pt];
 
+    applyStrokeStyle(ctx);
     ctx.beginPath();
     ctx.moveTo(pt.x, pt.y);
-    setIsDrawing(true);
+    // Draw tiny line segment so tap makes a visible dot
+    ctx.lineTo(pt.x + 0.1, pt.y + 0.1);
+    ctx.stroke();
   };
 
-  const draw = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
+  const drawAt = (pt: Point) => {
+    if (!isDrawingRef.current) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const pt = getCoordinates(e);
     currentStrokeRef.current.push(pt);
-
+    applyStrokeStyle(ctx);
     ctx.lineTo(pt.x, pt.y);
     ctx.stroke();
   };
 
-  const stopDrawing = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch {}
-
+  const stopDrawingStroke = () => {
+    if (!isDrawingRef.current) return;
+    isDrawingRef.current = false;
     setIsDrawing(false);
 
     if (currentStrokeRef.current.length > 0) {
-      const newStrokes = [...strokes, [...currentStrokeRef.current]];
+      const newStrokes = [...strokesRef.current, [...currentStrokeRef.current]];
       currentStrokeRef.current = [];
       setStrokes(newStrokes);
+      strokesRef.current = newStrokes;
     }
+  };
+
+  // Dedicated Native Touch Listeners with { passive: false } for mobile touchscreens
+  useEffect(() => {
+    if (!isDialogOpen) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      e.preventDefault(); // Stop mobile browser scrolling/gestures
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        startDrawingAt(getPointFromClient(touch.clientX, touch.clientY));
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault(); // Stop mobile browser scrolling/gestures
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        drawAt(getPointFromClient(touch.clientX, touch.clientY));
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      e.preventDefault();
+      stopDrawingStroke();
+    };
+
+    const handleTouchCancel = (e: TouchEvent) => {
+      e.preventDefault();
+      stopDrawingStroke();
+    };
+
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+    canvas.addEventListener('touchcancel', handleTouchCancel, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
+      canvas.removeEventListener('touchcancel', handleTouchCancel);
+    };
+  }, [isDialogOpen]);
+
+  // Pointer event handlers for desktop mouse or stylus
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType === 'touch') return; // Handled by native touch listener
+    startDrawingAt(getPointFromClient(e.clientX, e.clientY));
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType === 'touch') return;
+    drawAt(getPointFromClient(e.clientX, e.clientY));
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (e.pointerType === 'touch') return;
+    stopDrawingStroke();
   };
 
   const handleUndo = () => {
     if (strokes.length === 0) return;
     const newStrokes = strokes.slice(0, -1);
     setStrokes(newStrokes);
+    strokesRef.current = newStrokes;
     redrawCanvas(newStrokes);
   };
 
   const handleClearDialog = () => {
     setStrokes([]);
+    strokesRef.current = [];
     currentStrokeRef.current = [];
     const canvas = canvasRef.current;
     if (canvas) {
@@ -220,6 +295,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
   const handleOpenDialog = () => {
     if (readOnly) return;
     setStrokes([]);
+    strokesRef.current = [];
     currentStrokeRef.current = [];
     setIsDialogOpen(true);
     if (onDialogOpenChange) onDialogOpenChange(true);
@@ -244,6 +320,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     if (readOnly) return;
     setCurrentSignature(null);
     setStrokes([]);
+    strokesRef.current = [];
     if (onClear) onClear();
   };
 
@@ -355,16 +432,10 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
             onClick={(e) => {
               if (e.target === e.currentTarget) handleCloseDialog();
             }}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchMove={(e) => e.stopPropagation()}
-            onTouchEnd={(e) => e.stopPropagation()}
-            className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200 select-none"
+            className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200 select-none pointer-events-auto"
           >
             <div
-              onTouchStart={(e) => e.stopPropagation()}
-              onTouchMove={(e) => e.stopPropagation()}
-              onTouchEnd={(e) => e.stopPropagation()}
-              className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] select-text"
+              className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] select-text pointer-events-auto"
             >
               {/* Modal Header */}
               <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
@@ -400,11 +471,10 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
                 >
                   <canvas
                     ref={canvasRef}
-                    onPointerDown={startDrawing}
-                    onPointerMove={draw}
-                    onPointerUp={stopDrawing}
-                    onPointerCancel={stopDrawing}
-                    className="w-full h-full block cursor-crosshair active:cursor-crosshair"
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    className="w-full h-full block cursor-crosshair active:cursor-crosshair touch-none"
                     style={{ touchAction: 'none' }}
                   />
 
