@@ -581,32 +581,19 @@ export const ContractModal: React.FC<ContractModalProps> = ({
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                <div className="flex items-center gap-3">
-                  <Link
-                    href={`/kontrak/${contract.id}`}
-                    target="_blank"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    <span>Buka Lembar Surat Perjanjian Resmi</span>
-                  </Link>
-
-                  {(hasOwnerSigned || hasTenantSigned) && !showResetConfirm && (
-                    <button
-                      type="button"
-                      onClick={() => setShowResetConfirm(true)}
-                      className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 hover:text-amber-700 hover:underline font-medium cursor-pointer"
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                      <span>Reset Perjanjian</span>
-                    </button>
-                  )}
-                </div>
+                <Link
+                  href={`/kontrak/${contract.id}`}
+                  target="_blank"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Buka Lembar Surat Perjanjian Resmi</span>
+                </Link>
 
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-1.5 text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                  className="px-4 py-1.5 text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer"
                 >
                   Tutup
                 </button>
