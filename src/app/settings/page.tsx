@@ -7,6 +7,7 @@ import { clearAllData, getSettings, resetToDemoData, saveSettings } from '@/lib/
 import { isSupabaseConfigured } from '@/lib/supabase/client';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { CustomSelect } from '@/components/ui/CustomSelect';
+import { SettingsSkeleton } from '@/components/ui/Skeleton';
 import { useAuth } from '@/contexts/AuthContext';
 import { changeOwnerCredential, clearAuthSession, formatSlug } from '@/lib/auth';
 import {
@@ -35,8 +36,9 @@ import {
 } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { profile, updateProfile, logout } = useAuth();
+  const { profile, updateProfile, logout, isLoading: isAuthLoading } = useAuth();
   const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
 
   // Landlord Profile States
   const [businessName, setBusinessName] = useState(profile?.business_name || '');
@@ -111,18 +113,23 @@ export default function SettingsPage() {
   }, [profile]);
 
   useEffect(() => {
-    getSettings().then((s) => {
-      setSettings(s);
-      if (!profile) {
-        setBankName(s.bank_name);
-        setAccountNumber(s.account_number);
-        setAccountHolder(s.account_holder);
-        setContactPhone(s.contact_phone || '');
-        setReminderDays(s.reminder_days_before);
-        setDefaultCycle(s.default_cycle);
-        setCustomTemplate(s.custom_wa_template || '');
-      }
-    });
+    getSettings()
+      .then((s) => {
+        setSettings(s);
+        if (!profile) {
+          setBankName(s.bank_name);
+          setAccountNumber(s.account_number);
+          setAccountHolder(s.account_holder);
+          setContactPhone(s.contact_phone || '');
+          setReminderDays(s.reminder_days_before);
+          setDefaultCycle(s.default_cycle);
+          setCustomTemplate(s.custom_wa_template || '');
+        }
+        setIsLoadingSettings(false);
+      })
+      .catch(() => {
+        setIsLoadingSettings(false);
+      });
   }, [profile]);
 
   const handleSave = async (e: React.FormEvent) => {
@@ -253,6 +260,10 @@ export default function SettingsPage() {
 
   const supabaseReady = isSupabaseConfigured();
   const isDev = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_SHOW_DEV_TOOLS === 'true';
+
+  if (isAuthLoading || (isLoadingSettings && !profile)) {
+    return <SettingsSkeleton />;
+  }
 
   return (
     <div className="space-y-6 max-w-3xl">

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { BillingCycle, Property } from '@/types/database';
 import { getProperties, saveTenantApplication } from '@/lib/storage';
 import { CustomSelect } from '@/components/ui/CustomSelect';
+import { SewaFormSkeleton } from '@/components/ui/Skeleton';
 import {
   ArrowLeft,
   Building2,
@@ -54,18 +55,24 @@ function TenantRegistrationFormContent() {
   const [moveInDate, setMoveInDate] = useState<string>(todayStr);
   const [notes, setNotes] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    getProperties().then((list) => {
-      setProperties(list);
-      if (!propertyId && list.length > 0) {
-        const defaultId = preselectedPropertyId || list[0].id;
-        setPropertyId(defaultId);
-        const p = list.find((item) => item.id === defaultId);
-        const minM = p?.min_rental_months ?? 6;
-        setPreferredCycle(getValidInitialCycle(minM));
-      }
-    });
+    setIsLoading(true);
+    getProperties()
+      .then((list) => {
+        setProperties(list);
+        if (!propertyId && list.length > 0) {
+          const defaultId = preselectedPropertyId || list[0].id;
+          setPropertyId(defaultId);
+          const p = list.find((item) => item.id === defaultId);
+          const minM = p?.min_rental_months ?? 6;
+          setPreferredCycle(getValidInitialCycle(minM));
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [preselectedPropertyId, propertyId]);
 
   const handlePropertyChange = (id: string) => {
@@ -113,6 +120,10 @@ function TenantRegistrationFormContent() {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return <SewaFormSkeleton />;
+  }
 
   const selectedProp = properties.find((p) => p.id === propertyId);
 
@@ -380,7 +391,7 @@ function TenantRegistrationFormContent() {
 
 export default function TenantRegistrationPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-slate-400">Memuat formulir pendaftaran...</div>}>
+    <Suspense fallback={<SewaFormSkeleton />}>
       <TenantRegistrationFormContent />
     </Suspense>
   );

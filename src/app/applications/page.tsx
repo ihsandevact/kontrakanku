@@ -18,6 +18,7 @@ import {
 import { formatDateIndonesian, formatRupiah, getCycleLabel } from '@/lib/formatters';
 import { generateOwnerReplyUrl } from '@/lib/application-whatsapp';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { ApplicationCardSkeleton } from '@/components/ui/Skeleton';
 import {
   Building2,
   Check,
@@ -217,7 +218,12 @@ export default function ApplicationsPage() {
 
       {/* Applications List */}
       <div className="space-y-4">
-        {filteredApplications.map((app) => {
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => (
+            <ApplicationCardSkeleton key={i} />
+          ))
+        ) : (
+          filteredApplications.map((app) => {
           const prop = properties.find((p) => p.id === app.property_id);
           const isPending = app.status === 'pending';
           const isApproved = app.status === 'approved';
@@ -436,11 +442,11 @@ export default function ApplicationsPage() {
               </div>
             </div>
           );
-        })}
+        }))}
       </div>
 
       {/* Empty State */}
-      {filteredApplications.length === 0 && (
+      {!isLoading && filteredApplications.length === 0 && (
         <div className="bg-white dark:bg-slate-900/80 rounded-2xl p-8 text-center border border-slate-200/80 dark:border-slate-800">
           <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3 text-slate-400">
             <UserCheck className="w-6 h-6" />

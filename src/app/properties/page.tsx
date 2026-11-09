@@ -22,6 +22,7 @@ import { PropertyFormModal } from '@/components/PropertyFormModal';
 import { CheckInTenantModal } from '@/components/CheckInTenantModal';
 import { ContractModal } from '@/components/ContractModal';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { PropertyCardSkeleton } from '@/components/ui/Skeleton';
 import {
   Building2,
   Calendar,
@@ -179,7 +180,13 @@ export default function PropertiesPage() {
       </div>
 
       {/* Property Cards List */}
-      {filteredProperties.length === 0 ? (
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <PropertyCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : filteredProperties.length === 0 ? (
         <div className="p-8 sm:p-14 text-center rounded-3xl bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-800 space-y-4">
           <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
             <Building2 className="w-8 h-8" />

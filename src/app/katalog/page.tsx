@@ -8,6 +8,7 @@ import { getLeases, getProperties, getSettings } from '@/lib/storage';
 import { formatRupiah } from '@/lib/formatters';
 import { generateCatalogInquiryUrl } from '@/lib/application-whatsapp';
 import { PropertyDetailModal } from '@/components/public/PropertyDetailModal';
+import { CatalogCardSkeleton } from '@/components/ui/Skeleton';
 import {
   ArrowRight,
   Building2,
@@ -189,8 +190,25 @@ function CatalogContent() {
       </div>
 
       {/* Grid Properties */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {displayedProperties.map((prop) => {
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <CatalogCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : displayedProperties.length === 0 ? (
+        <div className="p-12 text-center rounded-3xl bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 space-y-3">
+          <Building2 className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto" />
+          <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">
+            Tidak Ada Unit Kontrakan
+          </h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Belum ada unit yang terdaftar atau tersedia untuk publik saat ini.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayedProperties.map((prop) => {
           const isOccupied = occupiedPropertyIds.has(prop.id);
           const monthlyPrice = prop.monthly_rate || 0;
           const photoSrc = prop.photos?.[0] || prop.photo_url || null;
@@ -388,6 +406,7 @@ function CatalogContent() {
           );
         })}
       </div>
+      )}
 
       {/* Detail Modal with deep linking */}
       <PropertyDetailModal
@@ -408,9 +427,10 @@ export default function CatalogPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-3">
-          <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs text-slate-400 font-medium">Memuat katalog...</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto py-8">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <CatalogCardSkeleton key={i} />
+          ))}
         </div>
       }
     >

@@ -7,6 +7,7 @@ import { getContractById, signContract } from '@/lib/storage';
 import { formatDateIndonesian, formatRupiah, getCycleLabel } from '@/lib/formatters';
 import { generateTenantSignedNotificationUrl } from '@/lib/contract-utils';
 import { SignaturePad } from '@/components/SignaturePad';
+import { ContractDocumentSkeleton } from '@/components/ui/Skeleton';
 import {
   ArrowLeft,
   Building2,
@@ -94,12 +95,7 @@ export default function TenantContractPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="max-w-2xl mx-auto py-16 text-center space-y-3">
-        <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p className="text-xs text-slate-500 font-medium">Memuat Surat Perjanjian Sewa Menyewa...</p>
-      </div>
-    );
+    return <ContractDocumentSkeleton />;
   }
 
   if (!contract) {

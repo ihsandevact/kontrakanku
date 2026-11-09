@@ -8,6 +8,7 @@ import { getLeases, getPublicPropertiesBySlug } from '@/lib/storage';
 import { formatRupiah } from '@/lib/formatters';
 import { formatPhoneNumber } from '@/lib/whatsapp';
 import { PropertyDetailModal } from '@/components/public/PropertyDetailModal';
+import { CatalogCardSkeleton } from '@/components/ui/Skeleton';
 import {
   ArrowRight,
   Building2,
@@ -117,9 +118,15 @@ function LandlordCatalogContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-3">
-        <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-        <span className="text-xs text-slate-400 font-medium">Memuat katalog unit kontrakan...</span>
+      <div className="space-y-8 max-w-5xl mx-auto py-6">
+        {/* Hero Banner Skeleton */}
+        <div className="h-44 sm:h-56 rounded-3xl bg-slate-200/80 dark:bg-slate-800/80 animate-pulse" />
+        {/* Grid Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <CatalogCardSkeleton key={i} />
+          ))}
+        </div>
       </div>
     );
   }
@@ -474,9 +481,13 @@ export default function LandlordCatalogPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-3">
-          <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-xs text-slate-400 font-medium">Memuat katalog...</span>
+        <div className="space-y-8 max-w-5xl mx-auto py-6">
+          <div className="h-44 sm:h-56 rounded-3xl bg-slate-200/80 dark:bg-slate-800/80 animate-pulse" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <CatalogCardSkeleton key={i} />
+            ))}
+          </div>
         </div>
       }
     >

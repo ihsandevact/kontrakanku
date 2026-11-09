@@ -11,6 +11,7 @@ import { formatDateIndonesian, formatRupiah, getCategoryLabel } from '@/lib/form
 import { TransactionFormModal } from '@/components/TransactionFormModal';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { CustomSelect } from '@/components/ui/CustomSelect';
+import { FinanceSummarySkeleton, TransactionRowSkeleton } from '@/components/ui/Skeleton';
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -118,61 +119,65 @@ export default function FinancePage() {
       </div>
 
       {/* Financial Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3.5">
-        {/* Total Pemasukan (Col 1 di Mobile) */}
-        <div className="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between min-h-[95px] sm:min-h-[110px]">
-          <div className="flex items-center justify-between text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-            <span className="truncate">Pemasukan</span>
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/15 flex items-center justify-center shrink-0">
-              <TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+      {isLoading ? (
+        <FinanceSummarySkeleton />
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3.5">
+          {/* Total Pemasukan (Col 1 di Mobile) */}
+          <div className="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between min-h-[95px] sm:min-h-[110px]">
+            <div className="flex items-center justify-between text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+              <span className="truncate">Pemasukan</span>
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/15 flex items-center justify-center shrink-0">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              </div>
             </div>
+            <div className="my-1 sm:my-2">
+              <span className="text-base xs:text-lg sm:text-2xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300 block truncate">
+                {formatRupiah(totalIncome)}
+              </span>
+            </div>
+            <p className="text-[10px] sm:text-[11px] text-slate-500 truncate">
+              Sewa unit & deposit
+            </p>
           </div>
-          <div className="my-1 sm:my-2">
-            <span className="text-base xs:text-lg sm:text-2xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300 block truncate">
-              {formatRupiah(totalIncome)}
-            </span>
-          </div>
-          <p className="text-[10px] sm:text-[11px] text-slate-500 truncate">
-            Sewa unit & deposit
-          </p>
-        </div>
 
-        {/* Total Pengeluaran (Col 2 di Mobile) */}
-        <div className="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between min-h-[95px] sm:min-h-[110px]">
-          <div className="flex items-center justify-between text-xs font-semibold text-rose-700 dark:text-rose-400">
-            <span className="truncate">Pengeluaran</span>
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-500/10 dark:bg-rose-500/15 flex items-center justify-center shrink-0">
-              <TrendingDown className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+          {/* Total Pengeluaran (Col 2 di Mobile) */}
+          <div className="bg-white dark:bg-slate-900/90 p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col justify-between min-h-[95px] sm:min-h-[110px]">
+            <div className="flex items-center justify-between text-xs font-semibold text-rose-700 dark:text-rose-400">
+              <span className="truncate">Pengeluaran</span>
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-rose-500/10 dark:bg-rose-500/15 flex items-center justify-center shrink-0">
+                <TrendingDown className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+              </div>
             </div>
+            <div className="my-1 sm:my-2">
+              <span className="text-base xs:text-lg sm:text-2xl font-bold tracking-tight text-rose-700 dark:text-rose-300 block truncate">
+                {formatRupiah(totalExpense)}
+              </span>
+            </div>
+            <p className="text-[10px] sm:text-[11px] text-slate-500 truncate">
+              Biaya perawatan unit
+            </p>
           </div>
-          <div className="my-1 sm:my-2">
-            <span className="text-base xs:text-lg sm:text-2xl font-bold tracking-tight text-rose-700 dark:text-rose-300 block truncate">
-              {formatRupiah(totalExpense)}
-            </span>
-          </div>
-          <p className="text-[10px] sm:text-[11px] text-slate-500 truncate">
-            Biaya perawatan unit
-          </p>
-        </div>
 
-        {/* Laba Bersih Riil (Col-Span-2 di Mobile sebagai Hero Banner) */}
-        <div className="col-span-2 sm:col-span-1 bg-gradient-to-br from-emerald-800 via-teal-800 to-slate-900 text-white p-3.5 sm:p-5 rounded-2xl shadow-xs border border-emerald-700/30 flex flex-col justify-between min-h-[95px] sm:min-h-[110px]">
-          <div className="flex items-center justify-between text-xs font-semibold text-emerald-200">
-            <span>Laba Bersih Riil</span>
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-              <Wallet className="w-3.5 h-3.5 text-emerald-300" />
+          {/* Laba Bersih Riil (Col-Span-2 di Mobile sebagai Hero Banner) */}
+          <div className="col-span-2 sm:col-span-1 bg-gradient-to-br from-emerald-800 via-teal-800 to-slate-900 text-white p-3.5 sm:p-5 rounded-2xl shadow-xs border border-emerald-700/30 flex flex-col justify-between min-h-[95px] sm:min-h-[110px]">
+            <div className="flex items-center justify-between text-xs font-semibold text-emerald-200">
+              <span>Laba Bersih Riil</span>
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                <Wallet className="w-3.5 h-3.5 text-emerald-300" />
+              </div>
             </div>
+            <div className="my-1 sm:my-2">
+              <span className="text-lg xs:text-xl sm:text-2xl font-bold text-white tracking-tight block truncate">
+                {formatRupiah(netProfit)}
+              </span>
+            </div>
+            <p className="text-[10px] sm:text-[11px] text-emerald-200/80 truncate">
+              Pemasukan dikurangi biaya perawatan
+            </p>
           </div>
-          <div className="my-1 sm:my-2">
-            <span className="text-lg xs:text-xl sm:text-2xl font-bold text-white tracking-tight block truncate">
-              {formatRupiah(netProfit)}
-            </span>
-          </div>
-          <p className="text-[10px] sm:text-[11px] text-emerald-200/80 truncate">
-            Pemasukan dikurangi biaya perawatan
-          </p>
         </div>
-      </div>
+      )}
 
       {/* Filter Toolbar (Stacked on Mobile) */}
       <div className="bg-white dark:bg-slate-900/90 p-3 sm:p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 text-xs sm:text-sm shadow-2xs">
@@ -224,7 +229,13 @@ export default function FinancePage() {
           </div>
         </div>
 
-        {filteredTransactions.length === 0 ? (
+        {isLoading ? (
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <TransactionRowSkeleton key={i} />
+            ))}
+          </div>
+        ) : filteredTransactions.length === 0 ? (
           <div className="p-8 sm:p-12 text-center text-slate-400 space-y-3">
             <Receipt className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto" />
             <div className="max-w-xs mx-auto">

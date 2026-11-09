@@ -8,6 +8,7 @@ import { getPublicPropertiesBySlug, submitPublicTenantApplication } from '@/lib/
 import { formatPhoneNumber } from '@/lib/whatsapp';
 import { formatRupiah } from '@/lib/formatters';
 import { CustomSelect } from '@/components/ui/CustomSelect';
+import { SewaFormSkeleton } from '@/components/ui/Skeleton';
 import {
   ArrowLeft,
   Building2,
@@ -141,12 +142,7 @@ function LandlordSewaContent() {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-3">
-        <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-        <span className="text-xs text-slate-400 font-medium">Memuat formulir pendaftaran...</span>
-      </div>
-    );
+    return <SewaFormSkeleton />;
   }
 
   if (notFound || !landlord) {
@@ -454,13 +450,7 @@ function LandlordSewaContent() {
 
 export default function LandlordSewaPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-[50vh] flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      }
-    >
+    <Suspense fallback={<SewaFormSkeleton />}>
       <LandlordSewaContent />
     </Suspense>
   );
