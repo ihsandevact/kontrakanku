@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { LandingPage } from '@/components/landing/LandingPage';
+import { DashboardSkeleton, LandingPageSkeleton } from '@/components/ui/Skeleton';
 import {
   AppSettings,
   DashboardMetrics,
@@ -105,17 +106,17 @@ export default function DashboardPage() {
 
   // If auth is still checking
   if (authLoading) {
-    return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-3">
-        <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-        <span className="text-xs text-slate-400 font-medium">Memuat KontrakinAja!...</span>
-      </div>
-    );
+    return <LandingPageSkeleton />;
   }
 
   // If visitor is not logged in, render SaaS Landing Page
   if (!isAuthenticated) {
     return <LandingPage />;
+  }
+
+  // If authenticated and dashboard data is still loading
+  if (isLoading) {
+    return <DashboardSkeleton />;
   }
 
   const urgentLeases = leases.filter(

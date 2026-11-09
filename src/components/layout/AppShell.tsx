@@ -9,6 +9,7 @@ import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { MobileNav } from './MobileNav';
 import { PublicHeader } from './PublicHeader';
+import { LandingPageSkeleton } from '@/components/ui/Skeleton';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -49,6 +50,17 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   // Loading state while verifying landlord session
   if (authLoading) {
+    if (pathname === '/') {
+      return (
+        <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-x-hidden">
+          <PublicHeader />
+          <main className="flex-1 w-full overflow-x-hidden">
+            <LandingPageSkeleton />
+          </main>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center space-y-3 bg-slate-50 dark:bg-slate-950">
         <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin" />
