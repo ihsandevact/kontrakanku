@@ -65,13 +65,16 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     setCurrentSignature(initialDataUrl);
   }, [initialDataUrl]);
 
-  // Lock body scroll when dialog is active
+  // Lock body scroll and ensure pointer-events active when dialog is open
   useEffect(() => {
     if (isDialogOpen) {
       const originalOverflow = document.body.style.overflow;
+      const originalPointerEvents = document.body.style.pointerEvents;
       document.body.style.overflow = 'hidden';
+      document.body.style.pointerEvents = 'auto';
       return () => {
         document.body.style.overflow = originalOverflow;
+        document.body.style.pointerEvents = originalPointerEvents;
       };
     }
   }, [isDialogOpen]);

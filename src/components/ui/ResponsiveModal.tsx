@@ -71,7 +71,6 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
       <Drawer.Root
         open={isOpen}
         dismissible={dismissible}
-        modal={dismissible}
         onOpenChange={(open) => {
           if (!open) onClose();
         }}
